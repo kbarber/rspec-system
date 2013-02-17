@@ -1,11 +1,11 @@
 # -*- encoding: utf-8 -*-
 Gem::Specification.new do |s|
   # Metadata
-  s.name        = "rspec-system-vagrant"
+  s.name        = "rspec-system"
   s.version     = "0.0.1"
   s.authors     = ["Ken Barber"]
   s.email       = ["ken@bob.sh"]
-  s.homepage    = "https://github.com/kbarber/rspec-system-vagrant"
+  s.homepage    = "https://github.com/kbarber/rspec-system"
   s.summary     = "System testing with vagrant"
 
   # Manifest
@@ -17,5 +17,7 @@ Gem::Specification.new do |s|
   # Dependencies
   s.required_ruby_version = '>= 1.9.3'
   s.add_runtime_dependency "vagrant"
+  s.add_runtime_dependency "sahara"
+  s.add_runtime_dependency "rspec"
   s.add_development_dependency "simplecov"
 end
