@@ -1,3 +1,5 @@
+require 'logger'
+
 shared_context "shared stuff", :scope => :all do
   # Grab the type of virtual environment we wish to run these tests in
   let(:rspec_virtual_env) do
@@ -6,6 +8,10 @@ shared_context "shared stuff", :scope => :all do
 
   let(:rspec_system_node_set) do
     RSpecSystem::NodeSet.new(rspec_system_config, rspec_virtual_env)
+  end
+
+  let(:rspec_system_logger) do
+    Logger::DEBUG
   end
 
   before :all do
@@ -23,13 +29,16 @@ shared_context "shared stuff", :scope => :all do
 
   before :each do
     puts 'before each: roll back vms'
+    rspec_system_node_set.rollback
   end
 
   after :each do
     puts 'after each: roll back vms'
+    rspec_system_node_set.rollback
   end
 
   after :all do
     puts 'after all: shut down all vms'
+    rspec_system_node_set.teardown
   end
 end

@@ -1,5 +1,5 @@
 module RSpecSystem::Helpers
   def run_on(dest, command)
-    puts "Would run #{command} on #{dest}"
+    rspec_system_node_set.run(dest,command)
   end
 end

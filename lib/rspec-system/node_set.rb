@@ -17,6 +17,18 @@ module RSpecSystem
     def setup
       @virtual_driver.setup
     end
+
+    def teardown
+      @virtual_driver.teardown
+    end
+
+    def rollback
+      @virtual_driver.rollback
+    end
+
+    def run(dest, command)
+      @virtual_driver.run(dest,command)
+    end
   end
 end
 
