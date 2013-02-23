@@ -1,0 +1,6 @@
+Vagrant::Config.run do |c|  c.vm.define 'main' do |vmconf|
+    vmconf.vm.box = 'centos-58-x64'
+    vmconf.vm.box_url = 'http://puppet-vagrant-boxes.puppetlabs.com/centos-58-x64.box'
+
+  end
+end
