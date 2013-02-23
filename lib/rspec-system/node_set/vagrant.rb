@@ -2,15 +2,19 @@ require 'vagrant'
 require 'fileutils'
 
 module RSpecSystem
-  class NodeSet::Vagrant
+  # A NodeSet implementation for Vagrant.
+  class NodeSet::Vagrant < RSpecSystem::NodeSet::Base
+    ENV_TYPE = 'vagrant'
+
     def initialize(config)
-      @config = config
+      super
       @vagrant_path = File.expand_path(File.join(RSpec.configuration.rspec_system_vagrant_projects, @config[:id].to_s))
     end
 
+    # Setup the NodeSet by starting all nodes.
     def setup
       puts "Setting up vagrant!"
-      create_virtualboxfile
+      create_vagrantfile
 
       puts "prepping vagrant environment"
       @vagrant_env = Vagrant::Environment.new(:cwd => @vagrant_path)
@@ -20,11 +24,13 @@ module RSpecSystem
       snapshot
     end
 
+    # Shutdown the NodeSet by shutting down or pausing all nodes.
     def teardown
       puts "running vagrant down"
       @vagrant_env.cli("suspend")
     end
 
+    # Take a snapshot of the NodeSet for rollback later.
     def snapshot
       puts "turning on sandbox"
       Dir.chdir(@vagrant_path) do
@@ -32,6 +38,7 @@ module RSpecSystem
       end
     end
 
+    # Rollback to the snapshot of the NodeSet.
     def rollback
       puts "rolling back vagrant box"
       Dir.chdir(@vagrant_path) do
@@ -39,6 +46,7 @@ module RSpecSystem
       end
     end
 
+    # Run a command on a host in the NodeSet.
     def run(dest, command)
       puts "Running #{command} on #{dest}"
       result = ""
@@ -49,8 +57,9 @@ module RSpecSystem
       result
     end
 
+    # Create the Vagrantfile for the NodeSet.
     # @api private
-    def create_virtualboxfile
+    def create_vagrantfile
       puts "Creating vagrant file here: #{@vagrant_path}"
       FileUtils.mkdir_p(@vagrant_path)
       File.open(File.expand_path(File.join(@vagrant_path, "Vagrantfile")), 'w') do |f|
@@ -59,7 +68,7 @@ module RSpecSystem
           puts "prepping #{k}"
           f.write(<<-EOS)
   c.vm.define '#{k}' do |vmconf|
-#{setup_prefabs(v[:prefab])}
+#{template_prefabs(v[:prefab])}
   end
           EOS
         end
@@ -67,8 +76,9 @@ module RSpecSystem
       end
     end
 
+    # Provide Vagrantfile templates for prefabs.
     # @api private
-    def setup_prefabs(prefab)
+    def template_prefabs(prefab)
       case prefab
       when 'centos-58-x64'
         <<-EOS

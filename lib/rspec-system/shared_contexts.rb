@@ -7,7 +7,7 @@ shared_context "shared stuff", :scope => :all do
   end
 
   let(:rspec_system_node_set) do
-    RSpecSystem::NodeSet.new(rspec_system_config, rspec_virtual_env)
+    RSpecSystem::NodeSet.create(rspec_system_config, rspec_virtual_env)
   end
 
   let(:rspec_system_logger) do
@@ -19,7 +19,7 @@ shared_context "shared stuff", :scope => :all do
 
     puts "Configuration for now is:"
     puts rspec_system_node_set.config.pretty_inspect
-    puts "Virtual Environment is: #{rspec_system_node_set.virtual_env}"
+    puts "Virtual Environment is: #{rspec_system_node_set.env_type}"
 
     rspec_system_node_set.setup
 
