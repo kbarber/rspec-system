@@ -27,7 +27,7 @@ module RSpecSystem
     # Shutdown the NodeSet by shutting down or pausing all nodes.
     def teardown
       puts "running vagrant down"
-      @vagrant_env.cli("suspend")
+      @vagrant_env.cli("destroy")
     end
 
     # Take a snapshot of the NodeSet for rollback later.

@@ -6,7 +6,7 @@ Gem::Specification.new do |s|
   s.authors     = ["Ken Barber"]
   s.email       = ["ken@bob.sh"]
   s.homepage    = "https://github.com/kbarber/rspec-system"
-  s.summary     = "System testing with vagrant"
+  s.summary     = "System testing with rspec"
 
   # Manifest
   s.files         = `git ls-files`.split("\n")
