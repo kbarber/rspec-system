@@ -16,8 +16,9 @@ Gem::Specification.new do |s|
 
   # Dependencies
   s.required_ruby_version = '>= 1.9.3'
-  s.add_runtime_dependency "vagrant"
   s.add_runtime_dependency "sahara"
   s.add_runtime_dependency "rspec"
+  s.add_runtime_dependency "kwalify"
   s.add_development_dependency "simplecov"
+  s.add_development_dependency "mocha"
 end

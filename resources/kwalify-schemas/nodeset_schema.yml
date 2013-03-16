@@ -1,0 +1,10 @@
+type: map
+mapping:
+  id: { type: str }
+  nodes:
+    type: map
+    mapping:
+      =:
+        type: map
+        mapping:
+          prefab: { type: str }

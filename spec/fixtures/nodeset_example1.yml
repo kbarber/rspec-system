@@ -1,0 +1,5 @@
+---
+id: 'centos-58-x64'
+nodes:
+  "main":
+    prefab: 'centos-58-x64'
