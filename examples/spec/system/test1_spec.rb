@@ -1,13 +1,13 @@
-require 'system_spec_helper'
+require 'spec_helper'
 
-shared_examples "test1", :scope => :all do
+describe "test1" do
+  include_context 'rspec-system'
+
   it 'run test1 - part1' do
-    puts 'test1 - part1'
     run_on('main', "cat /etc/resolv.conf")
   end
 
   it 'run test1 - part2' do
-    puts 'test1 - part2'
     run_on('main', "cat /etc/issue")
   end
 end

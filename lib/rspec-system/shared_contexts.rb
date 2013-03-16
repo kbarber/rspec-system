@@ -1,12 +1,23 @@
 require 'logger'
 
-shared_context "shared stuff", :scope => :all do
+shared_context "rspec-system", :scope => :all do
+  extend RSpecSystem::Log
+  include RSpecSystem::Log
+
+  def nodeset
+    Pathname.new(File.join(File.basename(__FILE__), '..', '.nodeset.yml'))
+  end
+
+  def rspec_system_config
+    YAML.load_file('.nodeset.yml')
+  end
+
   # Grab the type of virtual environment we wish to run these tests in
-  let(:rspec_virtual_env) do
+  def rspec_virtual_env
     ENV["RSPEC_VIRTUAL_ENV"] || 'vagrant'
   end
 
-  let(:rspec_system_node_set) do
+  def rspec_system_node_set
     RSpecSystem::NodeSet.create(rspec_system_config, rspec_virtual_env)
   end
 
@@ -17,28 +28,25 @@ shared_context "shared stuff", :scope => :all do
   before :all do
     require 'pp'
 
-    puts "Configuration for now is:"
-    puts rspec_system_node_set.config.pretty_inspect
-    puts "Virtual Environment is: #{rspec_system_node_set.env_type}"
+    log.info "START RSPEC-SYSTEM SETUP"
+    log.info "Configuration is: " + rspec_system_node_set.config.pretty_inspect
+    log.info "Virtual Environment type is: #{rspec_system_node_set.env_type}"
 
     rspec_system_node_set.setup
-
-    puts 'before all: setup vms'
-    puts 'before all: snapshot vms'
   end
 
   before :each do
-    puts 'before each: roll back vms'
+    log.info 'BEFORE EACH'
     rspec_system_node_set.rollback
   end
 
   after :each do
-    puts 'after each: roll back vms'
+    log.info 'AFTER EACH'
     rspec_system_node_set.rollback
   end
 
-  after :all do
-    puts 'after all: shut down all vms'
+  after :suite do
+    log.info 'FINALIZE RSPEC-SYSTEM SETUP'
     rspec_system_node_set.teardown
   end
 end

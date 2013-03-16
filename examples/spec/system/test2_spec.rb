@@ -1,6 +1,8 @@
-require 'system_spec_helper'
+require 'spec_helper'
 
-shared_examples "test2", :scope => :all do
+describe "test2" do
+  include_context 'rspec-system'
+
   it 'run test2 - part1' do
     puts 'test2 - part1'
   end

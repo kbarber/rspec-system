@@ -4,76 +4,80 @@ require 'fileutils'
 module RSpecSystem
   # A NodeSet implementation for Vagrant.
   class NodeSet::Vagrant < RSpecSystem::NodeSet::Base
+    include RSpecSystem::Log
+
     ENV_TYPE = 'vagrant'
 
     def initialize(config)
       super
-      @vagrant_path = File.expand_path(File.join(RSpec.configuration.system_tmp, 'vagrant_projects', @config[:id].to_s))
+      @vagrant_path = File.expand_path(File.join(RSpec.configuration.system_tmp, 'vagrant_projects', @config["id"].to_s))
     end
 
     # Setup the NodeSet by starting all nodes.
     def setup
-      puts "Setting up vagrant!"
+      log.info "Begin setting up vagrant"
       create_vagrantfile
 
-      puts "prepping vagrant environment"
-      @vagrant_env = Vagrant::Environment.new(:cwd => @vagrant_path)
-      puts "running vagrant up"
-      @vagrant_env.cli("up")
+      log.info "Running 'vagrant up'"
+      vagrant_env.cli("up")
 
       snapshot
     end
 
     # Shutdown the NodeSet by shutting down or pausing all nodes.
     def teardown
-      puts "running vagrant down"
-      @vagrant_env.cli("destroy")
+      log.info "Running 'vagrant destroy'"
+      vagrant_env.cli("destroy", "--force")
     end
 
     # Take a snapshot of the NodeSet for rollback later.
     def snapshot
-      puts "turning on sandbox"
+      log.info "Running 'vagrant sandbox on'"
       Dir.chdir(@vagrant_path) do
-        @vagrant_env.cli("sandbox", "on")
+        vagrant_env.cli("sandbox", "on")
       end
     end
 
     # Rollback to the snapshot of the NodeSet.
     def rollback
-      puts "rolling back vagrant box"
+      log.info "Running 'vagrant sandbox rollback'"
       Dir.chdir(@vagrant_path) do
-        @vagrant_env.cli("sandbox", "rollback")
+        vagrant_env.cli("sandbox", "rollback")
       end
     end
 
     # Run a command on a host in the NodeSet.
     def run(dest, command)
-      puts "Running #{command} on #{dest}"
       result = ""
-      @vagrant_env.vms[dest.to_sym].channel.sudo("cd /tmp && #{command}") do |ch, data| 
+      vagrant_env.vms[dest.to_sym].channel.sudo("cd /tmp && #{command}") do |ch, data| 
         result << data
-        puts "Got data: #{data}"
       end
       result
+    end
+
+    # @api private
+    def vagrant_env
+      Vagrant::Environment.new(:cwd => @vagrant_path)
     end
 
     # Create the Vagrantfile for the NodeSet.
     # @api private
     def create_vagrantfile
-      puts "Creating vagrant file here: #{@vagrant_path}"
+      log.info "Creating vagrant file here: #{@vagrant_path}"
       FileUtils.mkdir_p(@vagrant_path)
       File.open(File.expand_path(File.join(@vagrant_path, "Vagrantfile")), 'w') do |f|
         f.write('Vagrant::Config.run do |c|')
-        @config[:nodes].each do |k,v|
-          puts "prepping #{k}"
+        @config['nodes'].each do |k,v|
+          log.debug "Filling in content for #{k}"
           f.write(<<-EOS)
   c.vm.define '#{k}' do |vmconf|
-#{template_prefabs(v[:prefab])}
+#{template_prefabs(v["prefab"])}
   end
           EOS
         end
         f.write('end')
       end
+      log.debug "Finished creating vagrant file"
     end
 
     # Provide Vagrantfile templates for prefabs.
