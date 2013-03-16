@@ -1,0 +1,2 @@
+--require rspec-system/formatter
+--format=RSpecSystem::Formatter
