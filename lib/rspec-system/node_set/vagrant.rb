@@ -8,7 +8,7 @@ module RSpecSystem
 
     def initialize(config)
       super
-      @vagrant_path = File.expand_path(File.join(RSpec.configuration.rspec_system_vagrant_projects, @config[:id].to_s))
+      @vagrant_path = File.expand_path(File.join(RSpec.configuration.system_tmp, 'vagrant_projects', @config[:id].to_s))
     end
 
     # Setup the NodeSet by starting all nodes.
