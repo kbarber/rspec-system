@@ -12,9 +12,9 @@ describe 'nodeset_schema' do
     parser = Kwalify::Yaml::Parser.new(validator)
   end
 
-  examples = ['nodeset_example1.yml']
-  examples.each do |ex|
-    it "should not return an error for #{ex}" do
+#  examples = ['nodeset_example1.yml']
+  Pathname.glob(fixture_path + 'nodeset_example*.yml').each do |ex|
+    it "should not return an error for #{ex.basename}" do
       ydoc = parser.parse_file(fixture_path + ex)
       errors = parser.errors
       if errors && !errors.empty?

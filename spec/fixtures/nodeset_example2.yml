@@ -1,0 +1,7 @@
+---
+id: 'centos-58-x64'
+nodes:
+  "master":
+    prefab: 'centos-58-x64'
+  "agent":
+    prefab: 'centos-58-x64'
