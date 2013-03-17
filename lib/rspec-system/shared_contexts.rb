@@ -45,7 +45,7 @@ shared_context "rspec-system", :scope => :all do
     rspec_system_node_set.rollback
   end
 
-  after :suite do
+  after :all do
     log.info 'FINALIZE RSPEC-SYSTEM SETUP'
     rspec_system_node_set.teardown
   end
