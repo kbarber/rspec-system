@@ -1,4 +1,5 @@
 require 'logger'
+require 'yaml'
 
 shared_context "rspec-system", :scope => :all do
   extend RSpecSystem::Log
