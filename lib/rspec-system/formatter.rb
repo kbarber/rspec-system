@@ -13,10 +13,10 @@ module RSpecSystem
       output << bold("Total Test Count: ") << color(count, :cyan) << "\n\n"
     end
 
-    def example_started(proxy)
-      super(proxy)
+    def example_started(example)
+      super(example)
       output << "=================================================================\n\n"
-      output << bold("Running test:\n  ") << color(proxy.description, :magenta) << "\n\n"
+      output << bold("Running test:\n  ") << color(example.full_description, :magenta) << "\n\n"
     end
 
     def example_passed(example)

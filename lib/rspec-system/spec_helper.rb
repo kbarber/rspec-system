@@ -1,8 +1,8 @@
-require 'logger'
+require 'rspec-system'
 require 'yaml'
+require 'pp'
 
-shared_context "rspec-system", :scope => :all do
-  extend RSpecSystem::Log
+RSpec.configure do |c|
   include RSpecSystem::Log
 
   def nodeset
@@ -22,13 +22,8 @@ shared_context "rspec-system", :scope => :all do
     RSpecSystem::NodeSet.create(rspec_system_config, rspec_virtual_env)
   end
 
-  let(:rspec_system_logger) do
-    Logger::DEBUG
-  end
-
-  before :all do
-    require 'pp'
-
+  c.system_tmp = File.join(File.dirname(__FILE__), 'system', 'tmp')
+  c.before :suite do
     log.info "START RSPEC-SYSTEM SETUP"
     log.info "Configuration is: " + rspec_system_node_set.config.pretty_inspect
     log.info "Virtual Environment type is: #{rspec_system_node_set.env_type}"
@@ -36,18 +31,18 @@ shared_context "rspec-system", :scope => :all do
     rspec_system_node_set.setup
   end
 
-  before :each do
+  c.after :suite do
+    log.info 'FINALIZE RSPEC-SYSTEM SETUP'
+    rspec_system_node_set.teardown
+  end
+
+  c.before :each do
     log.info 'BEFORE EACH'
     rspec_system_node_set.rollback
   end
 
-  after :each do
+  c.after :each do
     log.info 'AFTER EACH'
     rspec_system_node_set.rollback
-  end
-
-  after :all do
-    log.info 'FINALIZE RSPEC-SYSTEM SETUP'
-    rspec_system_node_set.teardown
   end
 end
