@@ -28,20 +28,17 @@ Then installing with:
 
 #### Configuration
 
-Modify you `spec/spec_helper.rb` file (or create one) and add the following setup items:
-
-    RSpec.configure do |config|
-      config.system_tmp = File.join(File.dirname(__FILE__), 'system', 'tmp')
-      config.system_nodsets = # TODO
-    end
+TODO: for now just look at the `examples` directory.
 
 ### Tests
+
+Start by looking at the `examples` directory. I plan on fleshing out this documentation but for now just use the example.
 
 #### Running tests
 
 Run the system tests with:
 
-    RSPEC_SYSTEM=centos-5-x64 rspec spec/system
+    rake spec:system
 
 #### Writing tests
 
