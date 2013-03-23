@@ -1,9 +1,10 @@
 module RSpecSystem
   # Base class for a NodeSet.
   class NodeSet::Base
-    attr_reader :config
+    attr_reader :config, :setname
 
-    def initialize(config)
+    def initialize(setname, config)
+      @setname = setname
       @config = config
     end
 

@@ -1,10 +1,17 @@
 type: map
 mapping:
-  id: { type: str }
-  nodes:
+  default_set: { type: str }
+  sets:
     type: map
     mapping:
       =:
         type: map
         mapping:
-          prefab: { type: str }
+          nodes:
+            type: map
+            mapping:
+              =:
+                type: map
+                mapping:
+                  prefab: { type: str }
+                  role: { type: str }

@@ -20,12 +20,15 @@ RSpec.configure do |c|
   end
 
   def rspec_system_node_set
-    RSpecSystem::NodeSet.create(rspec_system_config, rspec_virtual_env)
+    setname = ENV['RSPEC_SET'] || rspec_system_config['default_set']
+    config = rspec_system_config['sets'][setname]
+    RSpecSystem::NodeSet.create(setname, config, rspec_virtual_env)
   end
 
   c.system_tmp = Dir.tmpdir
   c.before :suite do
     log.info "START RSPEC-SYSTEM SETUP"
+    log.info "Setname is: " + rspec_system_node_set.setname
     log.info "Configuration is: " + rspec_system_node_set.config.pretty_inspect
     log.info "Virtual Environment type is: #{rspec_system_node_set.env_type}"
 
