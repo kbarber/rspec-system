@@ -1,6 +1,7 @@
 require 'rspec-system'
 require 'yaml'
 require 'pp'
+require 'tempfile'
 
 RSpec.configure do |c|
   include RSpecSystem::Log
@@ -22,7 +23,7 @@ RSpec.configure do |c|
     RSpecSystem::NodeSet.create(rspec_system_config, rspec_virtual_env)
   end
 
-  c.system_tmp = File.join(File.dirname(__FILE__), 'system', 'tmp')
+  c.system_tmp = Dir.tmpdir
   c.before :suite do
     log.info "START RSPEC-SYSTEM SETUP"
     log.info "Configuration is: " + rspec_system_node_set.config.pretty_inspect
@@ -34,15 +35,5 @@ RSpec.configure do |c|
   c.after :suite do
     log.info 'FINALIZE RSPEC-SYSTEM SETUP'
     rspec_system_node_set.teardown
-  end
-
-  c.before :each do
-    log.info 'BEFORE EACH'
-    rspec_system_node_set.rollback
-  end
-
-  c.after :each do
-    log.info 'AFTER EACH'
-    rspec_system_node_set.rollback
   end
 end

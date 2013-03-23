@@ -1,4 +1,3 @@
-require 'vagrant'
 require 'fileutils'
 
 module RSpecSystem
@@ -18,46 +17,26 @@ module RSpecSystem
       log.info "Begin setting up vagrant"
       create_vagrantfile
 
-      log.info "Running 'vagrant up'"
-      vagrant_env.cli("up")
+      log.info "Running 'vagrant destroy'"
+      vagrant("destroy", "--force")
 
-      snapshot
+      log.info "Running 'vagrant up'"
+      vagrant("up")
     end
 
     # Shutdown the NodeSet by shutting down or pausing all nodes.
     def teardown
       log.info "Running 'vagrant destroy'"
-      vagrant_env.cli("destroy", "--force")
-    end
-
-    # Take a snapshot of the NodeSet for rollback later.
-    def snapshot
-      log.info "Running 'vagrant sandbox on'"
-      Dir.chdir(@vagrant_path) do
-        vagrant_env.cli("sandbox", "on")
-      end
-    end
-
-    # Rollback to the snapshot of the NodeSet.
-    def rollback
-      log.info "Running 'vagrant sandbox rollback'"
-      Dir.chdir(@vagrant_path) do
-        vagrant_env.cli("sandbox", "rollback")
-      end
+      vagrant("destroy", "--force")
     end
 
     # Run a command on a host in the NodeSet.
     def run(dest, command)
       result = ""
-      vagrant_env.vms[dest.to_sym].channel.sudo("cd /tmp && #{command}") do |ch, data| 
-        result << data
+      Dir.chdir(@vagrant_path) do
+        result = `vagrant ssh #{dest} --command 'cd /tmp && #{command}'`
       end
       result
-    end
-
-    # @api private
-    def vagrant_env
-      Vagrant::Environment.new(:cwd => @vagrant_path)
     end
 
     # Create the Vagrantfile for the NodeSet.
@@ -96,6 +75,14 @@ module RSpecSystem
         EOS
       else
         raise 'Unknown prefab'
+      end
+    end
+
+    # Execute vagrant command in vagrant_path
+    # @api private
+    def vagrant(*args)
+      Dir.chdir(@vagrant_path) do
+        system("vagrant", *args)
       end
     end
   end
