@@ -48,8 +48,6 @@ Create the directory `spec/system` in your project, make sure your unit tests go
       end
     end
 
-Now create a `.nodeset.yml` file which outlines the machine configurations to use for your tests. The file must adhere to the Kwalify schema supplied in `resources/kwalify-schemas/nodeset_schema.yml`.
-
 Also consult the example in `example` in the source of this library for more details.
 
 For you reference, here are the list of custom rspec configuration items that can be overriden in your `spec_helper_system.rb` file:
@@ -62,6 +60,22 @@ Currently to get the nice formatting rspec-system specific formatter its recomme
     require 'rspec-system/rake_task'
 
 That will setup the rake task `rake spec:system`.
+
+### Creating a nodeset file
+
+A nodeset file outlines all the node configurations for your tests. The concept here is to define one or more 'nodesets' each nodeset containing one or more 'nodes'.
+
+    ---
+    default_set: 'centos-58-x64'
+    sets:
+      'centos-58-x64':
+        nodes:
+          "main":
+            prefab: 'centos-58-x64'
+
+The file must adhere to the Kwalify schema supplied in `resources/kwalify-schemas/nodeset_schema.yml`.
+
+Prefabs are 'pre-rolled' virtual images, for now its the only way to do it. I plan on documenting this in more detail, and also allowing for customisation on this level. For now only `centos-58-x64` and `debian-606-x64` are supported.
 
 ### Running tests
 
