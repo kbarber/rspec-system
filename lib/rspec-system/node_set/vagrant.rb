@@ -1,4 +1,5 @@
 require 'fileutils'
+require 'systemu'
 
 module RSpecSystem
   # A NodeSet implementation for Vagrant.
@@ -34,7 +35,7 @@ module RSpecSystem
     def run(dest, command)
       result = ""
       Dir.chdir(@vagrant_path) do
-        result = `vagrant ssh #{dest} --command 'cd /tmp && #{command}'`
+        result = systemu "vagrant ssh #{dest} --command 'cd /tmp && sudo -i #{command}'"
       end
       result
     end

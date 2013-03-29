@@ -40,6 +40,11 @@ Run the system tests with:
 
     rake spec:system
 
+Instead of switches, we use a number of environment variables to modify the behaviour of running tests. This is more inline with the way testing frameworks like Jenkins work, and should be pretty easy for command line users as well:
+
+*RSPEC_VIRTUAL_ENV* - the type of virtual environment to run (currently `vagrant`)
+*RSPEC_SET* - the set to use when running tests (defaults to the `default_set` setting in your nodeset file)
+
 #### Writing tests
 
 Create the directory `spec/system` in your project. Add files with the spec prefix ie. `mytests_spec.rb`.
