@@ -11,6 +11,6 @@ RSpec::configure do |c|
 
   # This provides a path to save vagrant files
   c.add_setting :system_tmp
-  # Node set configuration
-  c.add_setting :system_nodesets
+  # Block to execute for environment setup
+  c.add_setting :system_setup_block
 end

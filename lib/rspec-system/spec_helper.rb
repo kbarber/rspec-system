@@ -25,8 +25,7 @@ RSpec.configure do |c|
     RSpecSystem::NodeSet.create(setname, config, rspec_virtual_env)
   end
 
-  c.system_tmp = Dir.tmpdir
-  c.before :suite do
+  def start_nodes
     log.info "START RSPEC-SYSTEM SETUP"
     log.info "Setname is: " + rspec_system_node_set.setname
     log.info "Configuration is: " + rspec_system_node_set.config.pretty_inspect
@@ -35,8 +34,29 @@ RSpec.configure do |c|
     rspec_system_node_set.setup
   end
 
-  c.after :suite do
+  def stop_nodes
     log.info 'FINALIZE RSPEC-SYSTEM SETUP'
     rspec_system_node_set.teardown
+  end
+
+  def call_custom_setup_block
+    # Run test specific setup routines
+    if pr = RSpec.configuration.system_setup_block then
+      log.info "Running custom setup block"
+      pr.call
+      log.info "Finished running custom setup block"
+    end
+  end
+
+  # Default the system_tmp dir to something random
+  c.system_tmp = Dir.tmpdir
+
+  c.before :suite do
+    start_nodes
+    call_custom_setup_block
+  end
+
+  c.after :suite do
+    stop_nodes
   end
 end
