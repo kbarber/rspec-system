@@ -15,69 +15,85 @@ module RSpecSystem
 
     # Setup the NodeSet by starting all nodes.
     def setup
-      log.info "Begin setting up vagrant"
+      log.info "[Vagrant#setup] Begin setting up vagrant"
       create_vagrantfile
 
-      log.info "Running 'vagrant destroy'"
-      vagrant("destroy", "--force")
+      log.info "[Vagrant#setup] Running 'vagrant destroy'"
+      vagrant("destroy --force")
 
-      log.info "Running 'vagrant up'"
+      log.info "[Vagrant#setup] Running 'vagrant up'"
       vagrant("up")
     end
 
     # Shutdown the NodeSet by shutting down or pausing all nodes.
     def teardown
-      log.info "Running 'vagrant destroy'"
-      vagrant("destroy", "--force")
+      log.info "[Vagrant#teardown] Running 'vagrant destroy'"
+      vagrant("destroy --force")
     end
 
     # Run a command on a host in the NodeSet.
-    def run(dest, command)
+    #
+    # @param opts [Hash] options
+    def run(opts)
+      #log.debug("[Vagrant#run] called with #{opts.inspect}")
+
+      dest = opts[:n].name
+      cmd = opts[:c]
+
       result = ""
       Dir.chdir(@vagrant_path) do
-        cmd = "vagrant ssh #{dest} --command \"cd /tmp && sudo -i #{command}\""
-        log.debug("[vagrant 'run'] Running command: #{cmd}")
+        cmd = "vagrant ssh #{dest} --command \"cd /tmp && sudo -i #{cmd}\""
+        log.debug("[vagrant#run] Running command: #{cmd}")
         result = systemu cmd
+        log.debug("[Vagrant#run] Finished running command: #{cmd}. Result is #{result}.")
       end
       result
     end
 
     # Transfer files to a host in the NodeSet.
-    def rcp(dest, source, dest_path)
+    #
+    # @param opts [Hash] options
+    def rcp(opts)
+      #log.debug("[Vagrant@rcp] called with #{opts.inspect}")
+
+      dest = opts[:d].name
+      source = opts[:sp]
+      dest_path = opts[:dp]
+
       # TODO: This is damn ugly, because we ssh in as vagrant, we copy to a
       # temp path then move later. This pattern at the moment only really works
       # on dirs.
-      log.info("Transferring files from #{source} to #{dest}:#{dest_path}")
+      log.info("[Vagrant#rcp] Transferring files from #{source} to #{dest}:#{dest_path}")
 
       # TODO: The static temp path here is definately insecure
       cmd = "scp -r -F #{ssh_config} #{source} #{dest}:/tmp/tmpxfer"
-      log.debug("Running command: #{cmd}")
+      log.debug("[Vagrant#rcp] Running command: #{cmd}")
       systemu cmd
 
       # Now we move the file into place
-      run(dest, "mv /tmp/tmpxfer #{dest_path}")
+      run(:n => opts[:d], :c => "mv /tmp/tmpxfer #{dest_path}")
     end
 
     # Create the Vagrantfile for the NodeSet.
     #
     # @api private
     def create_vagrantfile
-      log.info "Creating vagrant file here: #{@vagrant_path}"
+      log.info "[Vagrant#create_vagrantfile] Creating vagrant file here: #{@vagrant_path}"
       FileUtils.mkdir_p(@vagrant_path)
       File.open(File.expand_path(File.join(@vagrant_path, "Vagrantfile")), 'w') do |f|
         f.write('Vagrant::Config.run do |c|')
-        @config['nodes'].each do |k,v|
+        nodes.each do |k,v|
           log.debug "Filling in content for #{k}"
           f.write(<<-EOS)
   c.vm.define '#{k}' do |vmconf|
     vmconf.vm.host_name = "#{k}"
-#{template_prefabs(v["prefab"])}
+#{template_node(v.provider_specifics['vagrant'])}
   end
           EOS
         end
         f.write('end')
       end
-      log.debug "Finished creating vagrant file"
+      log.debug "[Vagrant#create_vagrantfile] Finished creating vagrant file"
     end
 
     # Here we get vagrant to drop the ssh_config its using so we can monopolize
@@ -91,7 +107,7 @@ module RSpecSystem
         File.unlink(ssh_config_path)
       rescue Errno::ENOENT
       end
-      @config['nodes'].each do |k,v|
+      self.nodes.each do |k,v|
         Dir.chdir(@vagrant_path) do
           result = systemu("vagrant ssh-config #{k} >> #{ssh_config_path}")
           puts result.inspect
@@ -100,35 +116,29 @@ module RSpecSystem
       ssh_config_path
     end
 
-    # Provide Vagrantfile templates for prefabs. We'll need to expand on how
-    # this gets done to provide for customisation etc. but for now everything
-    # is hard-coded.
+    # Provide Vagrantfile templates from node definition.
     #
     # @api private
-    def template_prefabs(prefab)
-      case prefab
-      when 'centos-58-x64'
-        <<-EOS
-    vmconf.vm.box = 'centos-58-x64'
-    vmconf.vm.box_url = 'http://puppet-vagrant-boxes.puppetlabs.com/centos-58-x64.box'
-        EOS
-      when 'debian-606-x64'
-        <<-EOS
-    vmconf.vm.box = 'debian-606-x64'
-    vmconf.vm.box_url = 'http://puppet-vagrant-boxes.puppetlabs.com/debian-606-x64.box'
-        EOS
-      else
-        raise 'Unknown prefab'
-      end
+    # @param settings [Hash] provider specific settings for vagrant
+    def template_node(settings)
+      template = <<-EOS
+    vmconf.vm.box = '#{settings['box']}'
+    vmconf.vm.box_url = '#{settings['box_url']}'
+      EOS
     end
 
     # Execute vagrant command in vagrant_path
     #
     # @api private
-    def vagrant(*args)
+    # @param args [String] args to vagrant
+    # @todo This seems a little too specific these days, might want to
+    #   generalize. It doesn't use systemu, because we want to see the output
+    #   immediately, but still - maybe we can make systemu do that.
+    def vagrant(args)
       Dir.chdir(@vagrant_path) do
-        system("vagrant", *args)
+        system("vagrant #{args}")
       end
+      nil
     end
   end
 end

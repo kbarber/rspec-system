@@ -26,12 +26,15 @@ RSpec.configure do |c|
   end
 
   def start_nodes
-    log.info "START RSPEC-SYSTEM SETUP"
-    log.info "Setname is: " + rspec_system_node_set.setname
-    log.info "Configuration is: " + rspec_system_node_set.config.pretty_inspect
-    log.info "Virtual Environment type is: #{rspec_system_node_set.env_type}"
+    ns = rspec_system_node_set
 
-    rspec_system_node_set.setup
+    log.info "START RSPEC-SYSTEM SETUP"
+    log.info "Setname is: " + ns.setname
+    log.info "Configuration is: " + ns.config.pretty_inspect
+    log.info "Virtual Environment type is: #{ns.env_type}"
+    log.info "Default node is: #{ns.default_node.name}"
+
+    ns.setup
   end
 
   def stop_nodes

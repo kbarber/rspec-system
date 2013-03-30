@@ -1,11 +1,14 @@
 module RSpecSystem
   # Base class for a NodeSet driver. If you want to create a new driver, you
   # should sub-class this and override all the methods below.
+  #
+  # @abstract Subclass and override methods to create a new NodeSet variant.
   class NodeSet::Base
     attr_reader :config
     attr_reader :setname
     attr_reader :nodes
 
+    # Create new NodeSet, populating necessary data structures.
     def initialize(setname, config)
       @setname = setname
       @config = config
@@ -27,18 +30,35 @@ module RSpecSystem
     end
 
     # Run a command on a host in the NodeSet.
-    def run(dest, command)
+    def run(options)
       raise "Unimplemented method #run"
     end
 
     # Copy a file to the host in the NodeSet.
-    def run(dest, command)
+    def rcp(options)
       raise "Unimplemented method #rcp"
     end
 
     # Return environment type
     def env_type
       self.class::ENV_TYPE
+    end
+
+    # Return default node
+    #
+    # @return [RSpecSystem::Node] default node for this nodeset
+    def default_node
+      dn = config['default_node']
+      if dn.nil?
+        if nodes.length == 1
+          dn = nodes.first[1]
+          return dn
+        else
+          raise "No default node"
+        end
+      else
+        return nodes[dn]
+      end
     end
   end
 end
