@@ -2,7 +2,7 @@
 Gem::Specification.new do |s|
   # Metadata
   s.name        = "rspec-system"
-  s.version     = "0.0.2"
+  s.version     = "0.1.0"
   s.authors     = ["Ken Barber"]
   s.email       = ["ken@bob.sh"]
   s.homepage    = "https://github.com/kbarber/rspec-system"
@@ -15,7 +15,7 @@ Gem::Specification.new do |s|
   s.require_paths = ["lib"]
 
   # Dependencies
-  s.required_ruby_version = '>= 1.9.3'
+  s.required_ruby_version = '>= 1.8.7'
   s.add_runtime_dependency "rspec"
   s.add_runtime_dependency "kwalify"
   s.add_runtime_dependency "systemu"
