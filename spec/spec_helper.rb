@@ -16,8 +16,11 @@ end
 def fixture_path
   Pathname.new(File.expand_path(File.join(__FILE__, '..', 'fixtures')))
 end
+def resources_path
+  Pathname.new(File.expand_path(File.join(__FILE__, '..', '..', 'resources')))
+end
 def schema_path
-  Pathname.new(File.expand_path(File.join(__FILE__, '..', '..', 'resources', 'kwalify-schemas')))
+  resources_path + 'kwalify-schemas'
 end
 
 RSpec.configure do |config|

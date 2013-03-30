@@ -1,0 +1,43 @@
+---
+'centos-58-x64':
+  description: "Vagrant images obtained from http://puppet-vagrant-boxes.puppetlabs.com"
+  facts:
+    architecture: x86_64
+    facterversion: "1.6.17"
+    kernel: Linux
+    kernelmajversion: "2.6"
+    kernelrelease: "2.6.18-308.el5"
+    kernelversion: "2.6.18"
+    lsbdistcodename: Final
+    lsbdistdescription: "CentOS release 5.8 (Final)"
+    lsbdistid: CentOS
+    lsbdistrelease: "5.8"
+    lsbmajdistrelease: "5"
+    lsbrelease: ":core-4.0-amd64:core-4.0-ia32:core-4.0-noarch:graphics-4.0-amd64:graphics-4.0-ia32:graphics-4.0-noarch:printing-4.0-amd64:printing-4.0-ia32:printing-4.0-noarch"
+    operatingsystem: CentOS
+    operatingsystemrelease: "5.8"
+    osfamily: RedHat
+    rubyversion: "1.9.2"
+  provider_specifics:
+    vagrant:
+      box: 'centos-58-x64'
+      box_url: 'http://puppet-vagrant-boxes.puppetlabs.com/centos-58-x64.box'
+'debian-606-x64':
+  description: "Vagrant images obtained from http://puppet-vagrant-boxes.puppetlabs.com"
+  facts:
+    architecture: amd64
+    facterversion: "1.6.17"
+    kernel: Linux
+    kernelmajversion: "2.6"
+    kernelversion: "2.6.32"
+    lsbdistcodename: squeeze
+    lsbdistdescription: "Debian GNU/Linux 6.0.6 (squeeze)"
+    lsbdistid: Debian
+    lsbdistrelease: "6.0.6"
+    operatingsystem: Debian
+    osfamily: Debian
+    rubyversion: "1.8.7"
+  provider_specifics:
+    vagrant:
+      box: 'debian-606-x64'
+      box_url: 'http://puppet-vagrant-boxes.puppetlabs.com/debian-606-x64.box'

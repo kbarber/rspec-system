@@ -35,7 +35,9 @@ module RSpecSystem
     def run(dest, command)
       result = ""
       Dir.chdir(@vagrant_path) do
-        result = systemu "vagrant ssh #{dest} --command 'cd /tmp && sudo -i #{command}'"
+        cmd = "vagrant ssh #{dest} --command \"cd /tmp && sudo -i #{command}\""
+        log.debug("[vagrant 'run'] Running command: #{cmd}")
+        result = systemu cmd
       end
       result
     end
@@ -68,6 +70,7 @@ module RSpecSystem
           log.debug "Filling in content for #{k}"
           f.write(<<-EOS)
   c.vm.define '#{k}' do |vmconf|
+    vmconf.vm.host_name = "#{k}"
 #{template_prefabs(v["prefab"])}
   end
           EOS

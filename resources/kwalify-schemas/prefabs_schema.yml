@@ -1,0 +1,17 @@
+type: map
+mapping:
+  =:
+    type: map
+    mapping:
+      description: { type: str }
+      facts:
+        type: map
+        mapping:
+          =: { type: str }
+      provider_specifics:
+        type: map
+        mapping:
+          =:
+            type: map
+            mapping:
+              =: { type: str}

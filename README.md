@@ -32,7 +32,7 @@ Start by creating a helper file in `spec/spec_helper_system.rb` containing somet
       c.system_setup_block = proc do
         include RSpecSystem::Helpers
         # Insert some setup tasks here
-        run_on('main', 'yum install -y ntp')
+        run('main', 'yum install -y ntp')
       end
     end
 
@@ -42,7 +42,7 @@ Create the directory `spec/system` in your project, make sure your unit tests go
 
     describe 'basics' do
       it 'should cat /etc/resolv.conf' do
-        run_on('main', 'cat /etc/resolv.conf') do |status,stdout,stderr|
+        run('main', 'cat /etc/resolv.conf') do |status,stdout,stderr|
           stdout.should =~ /localhost/
         end
       end
@@ -75,7 +75,11 @@ A nodeset file outlines all the node configurations for your tests. The concept 
 
 The file must adhere to the Kwalify schema supplied in `resources/kwalify-schemas/nodeset_schema.yml`.
 
-Prefabs are 'pre-rolled' virtual images, for now its the only way to do it. I plan on documenting this in more detail, and also allowing for customisation on this level. For now only `centos-58-x64` and `debian-606-x64` are supported.
+### Prefabs
+
+Prefabs are 'pre-rolled' virtual images, for now its the only way to do it.
+
+The current prefabs are defined in `resources/prefabs.yml`.
 
 ### Running tests
 
@@ -93,3 +97,21 @@ So if you wanted to run an alternate nodeset you could use:
     RSPEC_SET=nodeset2 rake spec:system
 
 In Jenkins you should be able to use RSPEC\_SET in a test matrix, thus obtaining quite a nice integration and visual display of nodesets in Jenkins.
+
+### Plugins to rspec-system
+
+I want to start an eco-system of plugins for rspec-system, but do it in a sane way. Right now I see the following potential plugin types, if you think you can help please do:
+
+* nodes providers - that is, abstractions around other virtualisation tools. Right now a NodeSet is tied to a virtual type, but I think this isn't granual enough.
+    * blimpy - for firing up EC2 and OpenStack nodes, useful for Jenkins integration
+    * vmware - for those who have VMWare virtual 'clouds' or boxen
+    * razor - for launching hardware nodes.
+    * manual - not everything has to be 'launched' I can see a need for defining a static configuration for older machines that can't be poked and peeked.
+* helper libraries - libraries that provide test helpers, and setup helpers for testing development on the software in question.
+    * distro - helpers that wrap common linux distro tasks, like package installation.
+    * puppet - helpers around installing different versions of puppet, PE as well - firing up masters. Perfect for testing modules I think.
+    * mcollective - for launching the basics, activemq, broker clusters. Useful for testing mcollective agents.
+    * puppetdb - helpers for setting up puppetdb, probably using the modules.
+    * others I'm sure ...
+
+These could be shipped as external gems, and plugged in to the rspec-system framework somehow.
