@@ -1,33 +1,56 @@
 # This module contains the main rspec helpers that are to be used within
-# rspec-system tests.
-#
-# The methods here-in are accessible within your rspec tests and can also
-# be used within your setup blocks as well.
+# rspec-system tests. These are the meat-and-potatoes of your system tests,
+# and in theory there shouldn't be anything you can't do without the helpers
+# here.
 #
 # These helpers in particular are core to the framework. You can however
-# combined these helpers to create your own more powerful helpers in rspec
+# combine these helpers to create your own more powerful helpers in rspec
 # if you wish.
 #
 # @example Using run within your tests
 #   describe 'test running' do
 #     it 'run cat' do
-#       run 'cat /etc/resolv.conf' do |status, out, err|
-#         status.exitstatus.should == 0
-#         stdout.should =~ /localhost/
+#       system_run 'cat /etc/resolv.conf' do |s, o, e|
+#         s.exitstatus.should == 0
+#         o.should =~ /localhost/
 #       end
 #     end
 #   end
 # @example Using rcp in your tests
 #   describe 'test running' do
 #     it 'copy my files' do
-#       rcp :sp => 'mydata', :dp => '/srv/data'.should be_true
+#       system_rcp :sp => 'mydata', :dp => '/srv/data'.should be_true
 #     end
 #   end
 # @example Using node in your tests
 #   describe 'test running' do
 #     it 'do something if redhat' do
-#       if node.facts[:operatingsystem] == 'RedHat' do
-#         run 'cat /etc/redhat-release'
+#       if system_node.facts[:operatingsystem] == 'RedHat' do
+#         system_run 'cat /etc/redhat-release'
+#       end
+#     end
+#   end
+# @example Make your own helper
+#   describe 'my own helper' do
+#     def install_puppet
+#       # Grab PL repository and install PL copy of puppet
+#       if facts['osfamily'] == 'RedHat'
+#         system_run('rpm -ivh http://yum.puppetlabs.com/el/5/products/i386/puppetlabs-release-5-6.noarch.rpm')
+#         system_run('yum install -y puppet')
+#       elsif facts['osfamily'] == 'Debian'
+#         system_run("wget http://apt.puppetlabs.com/puppetlabs-release-#{facts['lsbdistcodename']}.deb")
+#         system_run("dpkg -i puppetlabs-release-#{facts['lsbdistcodename']}.deb")
+#         system_run('apt-get update')
+#         system_run('apt-get install -y puppet')
+#       end
+#     end
+#
+#     it 'test installing latest puppet' do
+#       install_puppet
+#       run_system('puppet apply --version') do |s, o, e|
+#         s.exitstatus == 0
+#         o.should =~ /3.1/
+#         e.should == ''
 #       end
 #     end
 #   end
@@ -58,7 +81,7 @@ module RSpecSystem::Helpers
   # @yieldparam stderr [String] the standard error of the command result
   # @return [Array<Process::Status,String,String>] returns status, stdout and
   #  stderr when called as a simple method.
-  def run(options)
+  def system_exec(options)
     ns = rspec_system_node_set
     dn = ns.default_node
 
@@ -118,7 +141,7 @@ module RSpecSystem::Helpers
   # @todo Need to create some helpers for validating input and creating default,
   #   aliases and bloody yarddocs from some other magic format. Ideas?
   # @todo Support system to system copy using source_node option.
-  def rcp(options)
+  def system_rcp(options)
     options = {
       :source_path => options[:sp],
       :destination_path => options[:dp],
@@ -160,7 +183,7 @@ module RSpecSystem::Helpers
   # @param options [Hash] search criteria
   # @option options [String] :name the canonical name of the node
   # @return [RSpecSystem::Node] node object
-  def node(options = {})
+  def system_node(options = {})
     ns = rspec_system_node_set
     options = {
       :name => ns.default_node,
