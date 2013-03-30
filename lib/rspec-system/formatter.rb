@@ -1,6 +1,16 @@
 require "rspec/core/formatters/base_text_formatter"
 
 module RSpecSystem
+  # This custom formatter is designed for rspec-system test presentation
+  #
+  # Because rspec-system tests are often wordier and require lots of diagnostic
+  # information to be enabled for future debugging, the traditional document
+  # and progress formatters just simply aren't sufficient.
+  #
+  # This formatter instead treats each test as a document section, splitting
+  # up the output with obvious breaks so the user can clearly see when a test
+  # has started and finished. It also attempts to use color for visibility
+  # as well as listing test case information in a more verbose way.
   class Formatter < RSpec::Core::Formatters::BaseTextFormatter
     def initialize(output)
       super(output)
