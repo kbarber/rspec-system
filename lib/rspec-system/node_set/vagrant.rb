@@ -40,7 +40,24 @@ module RSpecSystem
       result
     end
 
+    # Transfer files to a host in the NodeSet.
+    def rcp(dest, source, dest_path)
+      # TODO: This is damn ugly, because we ssh in as vagrant, we copy to a
+      # temp path then move later. This pattern at the moment only really works
+      # on dirs.
+      log.info("Transferring files from #{source} to #{dest}:#{dest_path}")
+
+      # TODO: The static temp path here is definately insecure
+      cmd = "scp -r -F #{ssh_config} #{source} #{dest}:/tmp/tmpxfer"
+      log.debug("Running command: #{cmd}")
+      systemu cmd
+
+      # Now we move the file into place
+      run(dest, "mv /tmp/tmpxfer #{dest_path}")
+    end
+
     # Create the Vagrantfile for the NodeSet.
+    #
     # @api private
     def create_vagrantfile
       log.info "Creating vagrant file here: #{@vagrant_path}"
@@ -60,7 +77,30 @@ module RSpecSystem
       log.debug "Finished creating vagrant file"
     end
 
-    # Provide Vagrantfile templates for prefabs.
+    # Here we get vagrant to drop the ssh_config its using so we can monopolize
+    # it for transfers and custom stuff. We drop it into a single file, and
+    # since its indexed based on our own node names its quite ideal.
+    #
+    # @api private
+    def ssh_config
+      ssh_config_path = File.expand_path(File.join(@vagrant_path, "ssh_config"))
+      begin
+        File.unlink(ssh_config_path)
+      rescue Errno::ENOENT
+      end
+      @config['nodes'].each do |k,v|
+        Dir.chdir(@vagrant_path) do
+          result = systemu("vagrant ssh-config #{k} >> #{ssh_config_path}")
+          puts result.inspect
+        end
+      end
+      ssh_config_path
+    end
+
+    # Provide Vagrantfile templates for prefabs. We'll need to expand on how
+    # this gets done to provide for customisation etc. but for now everything
+    # is hard-coded.
+    #
     # @api private
     def template_prefabs(prefab)
       case prefab
@@ -80,6 +120,7 @@ module RSpecSystem
     end
 
     # Execute vagrant command in vagrant_path
+    #
     # @api private
     def vagrant(*args)
       Dir.chdir(@vagrant_path) do

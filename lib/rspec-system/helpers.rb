@@ -34,4 +34,17 @@ module RSpecSystem::Helpers
     end
   end
 
+  # Remotely copy contents to a destination node and path.
+  def rcp_to(dest, source, dest_path)
+    log.info("rcp_to(#{dest}, #{source}, #{dest_path}) executed")
+    status, stdout, stderr = results = rspec_system_node_set.rcp(dest, source, dest_path)
+    log.info("rcp_to(#{dest}, #{source}, #{dest_path}) results:\n" +
+      "-----------------------\n" +
+      "Exit Status: #{status.exitstatus}\n" +
+      "<stdout>#{stdout}</stdout>\n" +
+      "<stderr>#{stderr}</stderr>\n" +
+      "-----------------------\n")
+
+    results
+  end
 end
