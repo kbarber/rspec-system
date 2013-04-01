@@ -12,10 +12,15 @@ module RSpecSystem
   # has started and finished. It also attempts to use color for visibility
   # as well as listing test case information in a more verbose way.
   class Formatter < RSpec::Core::Formatters::BaseTextFormatter
+    # Initialize formatter
     def initialize(output)
       super(output)
     end
 
+    # Display test start information
+    #
+    # @param count [Fixnum] number of tests to run
+    # @return [void]
     def start(count)
       super(count)
       output << "=================================================================\n\n"
@@ -23,17 +28,29 @@ module RSpecSystem
       output << bold("Total Test Count: ") << color(count, :cyan) << "\n\n"
     end
 
+    # Display output when an example has started
+    #
+    # @param example [RSpec::Core::Example] example that is running
+    # @return [void]
     def example_started(example)
       super(example)
       output << "=================================================================\n\n"
       output << bold("Running test:\n  ") << color(example.full_description, :magenta) << "\n\n"
     end
 
+    # Display output when an example has passed
+    #
+    # @param example [RSpec::Core::Example] example that is running
+    # @return [void]
     def example_passed(example)
       super(example)
       output << "\n" << bold('Result: ') << success_color('passed') << "\n\n"
     end
 
+    # Display output when an example is pending
+    #
+    # @param example [RSpec::Core::Example] example that is running
+    # @return [void]
     def example_pending(example)
       super(example)
       msg = example.execution_result[:pending_message]
@@ -41,6 +58,10 @@ module RSpecSystem
       output << bold("Reason: ") << "#{msg}\n\n"
     end
 
+    # Display output when an example has failed
+    #
+    # @param example [RSpec::Core::Example] example that is running
+    # @return [void]
     def example_failed(example)
       super(example)
       msg = example.execution_result[:exception]
@@ -49,6 +70,10 @@ module RSpecSystem
       output << bold("Reason:\n") << "#{msg}\n\n"
     end
 
+    # Obtains next index value so we can keep a count of what test we are upto
+    #
+    # @api private
+    # @return [Fixnum] index #
     def next_failure_index
       @next_failure_index ||= 0
       @next_failure_index += 1

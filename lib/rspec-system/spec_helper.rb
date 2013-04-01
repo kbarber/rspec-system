@@ -1,3 +1,6 @@
+# This file provides a require-able entry point for putting at the top of your
+# tests, or in a shared helper.
+
 require 'rspec-system'
 require 'yaml'
 require 'pp'
@@ -5,6 +8,12 @@ require 'tempfile'
 
 RSpec.configure do |c|
   include RSpecSystem::Log
+  c.include RSpecSystem::Helpers
+
+  # This provides a path to save vagrant files
+  c.add_setting :system_tmp
+  # Block to execute for environment setup
+  c.add_setting :system_setup_block
 
   def nodeset
     Pathname.new(File.join(File.basename(__FILE__), '..', '.nodeset.yml'))

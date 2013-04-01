@@ -1,3 +1,5 @@
+# Include this file to create the spec:* rake tasks
+
 require 'rubygems'
 require "bundler/setup"
 

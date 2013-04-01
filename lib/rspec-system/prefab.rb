@@ -1,4 +1,5 @@
 module RSpecSystem
+  # This object represents a prefab definition from the prefabs.yml file
   class Prefab
     attr_reader :name
     attr_reader :description
