@@ -66,7 +66,7 @@ module RSpecSystem
       log.info("[Vagrant#rcp] Transferring files from #{source} to #{dest}:#{dest_path}")
 
       # TODO: The static temp path here is definately insecure
-      cmd = "scp -r -F #{ssh_config} #{source} #{dest}:/tmp/tmpxfer"
+      cmd = "scp -r -F '#{ssh_config}' '#{source}' #{dest}:/tmp/tmpxfer"
       log.debug("[Vagrant#rcp] Running command: #{cmd}")
       systemu cmd
 
