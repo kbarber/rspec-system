@@ -5,6 +5,9 @@ RSpec.configure do |c|
 
   # This is where we 'setup' the nodes before running our tests
   c.system_setup_block = proc do
+    include RSpecSystem::Helpers
+    include RSpecSystem::Log
+
     facts = system_node.facts
 
     # Remove annoying mesg n from profile, otherwise on Debian we get:
