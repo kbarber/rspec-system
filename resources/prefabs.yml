@@ -22,6 +22,29 @@
     vagrant:
       box: 'centos-58-x64'
       box_url: 'http://puppet-vagrant-boxes.puppetlabs.com/centos-58-x64.box'
+'centos-59-x64':
+  description: "Vagrant images obtained from http://puppet-vagrant-boxes.puppetlabs.com"
+  facts:
+    architecture: x86_64
+    kernel: Linux
+    operatingsystem: CentOS
+    lsbdistid: CentOS
+    facterversion: "1.6.18"
+    kernelmajversion: "2.6"
+    kernelrelease: "2.6.18-348.el5"
+    kernelversion: "2.6.18"
+    lsbdistcodename: Final
+    lsbdistdescription: "CentOS release 5.9 (Final)"
+    lsbdistrelease: "5.9"
+    lsbmajdistrelease: "5"
+    lsbrelease: ":core-4.0-amd64:core-4.0-ia32:core-4.0-noarch:graphics-4.0-amd64:graphics-4.0-ia32:graphics-4.0-noarch:printing-4.0-amd64:printing-4.0-ia32:printing-4.0-noarch"
+    operatingsystemrelease: "5.9"
+    osfamily: RedHat
+    rubyversion: "1.9.2"
+  provider_specifics:
+    vagrant:
+      box: 'centos-59-x64-vbox4210-nocm'
+      box_url: 'http://puppet-vagrant-boxes.puppetlabs.com/centos-59-x64-vbox4210-nocm.box'
 'centos-63-x64':
   description: "Vagrant images obtained from http://puppet-vagrant-boxes.puppetlabs.com"
   facts:
@@ -44,6 +67,40 @@
     vagrant:
       box: 'centos-63-x64'
       box_url: 'http://puppet-vagrant-boxes.puppetlabs.com/centos-63-x64.box'
+'centos-64-x64':
+  description: ""
+  facts:
+    kernelrelease: "2.6.32-358.el6.x86_64"
+    operatingsystem: CentOS
+    kernelmajversion: "2.6"
+    architecture: x86_64
+    facterversion: "1.6.18"
+    kernelversion: "2.6.32"
+    operatingsystemrelease: "6.4"
+    osfamily: RedHat
+    kernel: Linux
+    rubyversion: "1.8.7"
+  provider_specifics:
+    vagrant:
+      box: 'centos-64-x64-vbox4210-nocm'
+      box_url: 'http://puppet-vagrant-boxes.puppetlabs.com/centos-64-x64-vbox4210-nocm.box'
+'fedora-18-x64':
+  description: ""
+  facts:
+    architecture: x86_64
+    kernel: Linux
+    operatingsystem: Fedora
+    facterversion: 1.6.18
+    kernelmajversion: "3.6"
+    kernelrelease: 3.6.10-4.fc18.x86_64
+    kernelversion: 3.6.10
+    operatingsystemrelease: "18"
+    osfamily: RedHat
+    rubyversion: 1.9.3
+  provider_specifics:
+    vagrant:
+      box: 'fedora-18-x64-vbox4210-nocm'
+      box_url: 'http://puppet-vagrant-boxes.puppetlabs.com/fedora-18-x64-vbox4210-nocm.box'
 'debian-606-x64':
   description: "Vagrant images obtained from http://puppet-vagrant-boxes.puppetlabs.com"
   facts:
@@ -63,6 +120,50 @@
     vagrant:
       box: 'debian-606-x64'
       box_url: 'http://puppet-vagrant-boxes.puppetlabs.com/debian-606-x64.box'
+'debian-607-x64':
+  description: ""
+  facts:
+    kernel: Linux
+    lsbmajdistrelease: "6"
+    operatingsystemrelease: "6.0.7"
+    kernelrelease: "2.6.32-5-amd64"
+    osfamily: Debian
+    lsbdistrelease: "6.0.7"
+    lsbdistcodename: squeeze
+    lsbdistdescription: "Debian GNU/Linux 6.0.7 (squeeze)"
+    kernelversion: "2.6.32"
+    operatingsystem: Debian
+    kernelmajversion: "2.6"
+    facterversion: "1.6.18"
+    rubyversion: "1.8.7"
+    lsbdistid: Debian
+    architecture: amd64
+  provider_specifics:
+    vagrant:
+      box: 'debian-607-x64-vbox4210-nocm'
+      box_url: 'http://puppet-vagrant-boxes.puppetlabs.com/debian-607-x64-vbox4210-nocm.box'
+'debian-70rc1-x64':
+  description: ""
+  facts:
+    architecture: amd64
+    kernel: Linux
+    operatingsystem: Debian
+    lsbdistid: Debian
+    facterversion: "1.6.18"
+    kernelmajversion: "3.2"
+    kernelrelease: "3.2.0-4-amd64"
+    kernelversion: "3.2.0"
+    lsbdistcodename: wheezy
+    lsbdistdescription: "Debian GNU/Linux 7.0 (wheezy)"
+    lsbdistrelease: "7.0"
+    lsbmajdistrelease: "7"
+    operatingsystemrelease: "7.0"
+    osfamily: Debian
+    rubyversion: "1.9.3"
+  provider_specifics:
+    vagrant:
+      box: 'debian-70rc1-x64-vbox4210-nocm'
+      box_url: 'http://puppet-vagrant-boxes.puppetlabs.com/debian-70rc1-x64-vbox4210-nocm.box'
 'ubuntu-server-1004-x64':
   description: ''
   facts:
@@ -85,6 +186,28 @@
     vagrant:
       box: 'ubuntu-server-1004-x64'
       box_url: 'http://puppet-vagrant-boxes.puppetlabs.com/ubuntu-server-1004-x64.box'
+'ubuntu-server-10044-x64':
+  description: ""
+  facts:
+    kernel: Linux
+    lsbmajdistrelease: "10"
+    operatingsystemrelease: "10.04"
+    kernelrelease: "2.6.32-46-server"
+    lsbdistrelease: "10.04"
+    osfamily: Debian
+    kernelversion: "2.6.32"
+    lsbdistcodename: lucid
+    lsbdistdescription: "Ubuntu 10.04.4 LTS"
+    kernelmajversion: "2.6"
+    operatingsystem: Ubuntu
+    facterversion: "1.6.18"
+    architecture: amd64
+    rubyversion: "1.8.7"
+    lsbdistid: Ubuntu
+  provider_specifics:
+    vagrant:
+      box: 'ubuntu-server-10044-x64-vbox4210-nocm'
+      box_url: 'http://puppet-vagrant-boxes.puppetlabs.com/ubuntu-server-10044-x64-vbox4210-nocm.box'
 'ubuntu-server-1204-x64':
   description: ''
   facts:
@@ -107,6 +230,28 @@
     vagrant:
       box: 'ubuntu-server-1204-x64'
       box_url: 'http://puppet-vagrant-boxes.puppetlabs.com/ubuntu-server-1204-x64.box'
+'ubuntu-server-12042-x64':
+  description: "Foo"
+  facts:
+    architecture: amd64
+    kernel: Linux
+    operatingsystem: Ubuntu
+    lsbdistid: Ubuntu
+    facterversion: "1.6.18"
+    kernelmajversion: "3.5"
+    kernelrelease: "3.5.0-23-generic"
+    kernelversion: "3.5.0"
+    lsbdistcodename: precise
+    lsbdistdescription: "Ubuntu 12.04.2 LTS"
+    lsbdistrelease: "12.04"
+    lsbmajdistrelease: "12"
+    operatingsystemrelease: "12.04"
+    osfamily: Debian
+    rubyversion: "1.9.3"
+  provider_specifics:
+    vagrant:
+      box: 'ubuntu-server-12042-x64-vbox4210-nocm'
+      box_url: 'http://puppet-vagrant-boxes.puppetlabs.com/ubuntu-server-12042-x64-vbox4210-nocm.box'
 'sles-11sp1-x64':
   description: ''
   facts:
@@ -116,11 +261,11 @@
     osfamily: Suse
     kernelversion: "2.6.32.12"
     operatingsystem: SLES
-    facterversion: "1.6.17"
+    facterversion: "1.6.18"
     kernelmajversion: "2.6"
     rubyversion: "1.8.7"
     architecture: x86_64
   provider_specifics:
     vagrant:
-      box: 'sles-11sp1-x64'
-      box_url: 'http://puppet-vagrant-boxes.puppetlabs.com/sles-11sp1-x64.box'
+      box: 'sles-11sp1-x64-vbox4210-nocm'
+      box_url: 'http://puppet-vagrant-boxes.puppetlabs.com/sles-11sp1-x64-vbox4210-nocm.box'
