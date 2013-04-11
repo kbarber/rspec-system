@@ -19,9 +19,9 @@
 # @example Using run within your tests
 #   describe 'test running' do
 #     it 'run cat' do
-#       system_run 'cat /etc/resolv.conf' do |s, o, e|
-#         s.exitstatus.should == 0
-#         o.should =~ /localhost/
+#       system_run 'cat /etc/resolv.conf' do |r|
+#         r[:exit_code].should == 0
+#         r[:stdout].should =~ /localhost/
 #       end
 #     end
 #   end
@@ -58,10 +58,10 @@
 #
 #     it 'test installing latest puppet' do
 #       install_puppet
-#       system_run('puppet apply --version') do |s, o, e|
-#         s.exitstatus == 0
-#         o.should =~ /3.1/
-#         e.should == ''
+#       system_run('puppet apply --version') do |r|
+#         r[:exit_code] == 0
+#         r[:stdout].should =~ /3.1/
+#         r[:stderr].should == ''
 #       end
 #     end
 #   end
@@ -90,13 +90,9 @@ module RSpecSystem::Helpers
   #   default in your YAML file, otherwise if there is only one node it uses
   #   that) specifies node to execute command on.
   # @option options [RSpecSystem::Node] :n alias for :node
-  # @yield [status, stdout, stderr] yields status, stdout and stderr when
-  #   called as a block.
-  # @yieldparam status [Process::Status] the status of the executed command
-  # @yieldparam stdout [String] the standard out of the command result
-  # @yieldparam stderr [String] the standard error of the command result
-  # @return [Array<Process::Status,String,String>] returns status, stdout and
-  #  stderr when called as a simple method.
+  # @yield [result] yields result when called as a block
+  # @yieldparam result [Hash] a hash containing :exit_code, :stdout and :stderr
+  # @return [Hash] a hash containing :exit_code, :stdout and :stderr
   def system_run(options)
     ns = rspec_system_node_set
     dn = ns.default_node
@@ -120,16 +116,14 @@ module RSpecSystem::Helpers
     end
 
     log.info("system_run #{options[:c]} on #{options[:n].name} executed")
-    status, stdout, stderr = result = ns.run(options)
+    result = ns.run(options)
     log.info("system_run results:\n" +
       "-----------------------\n" +
-      "Exit Status: #{status.exitstatus}\n" +
-      "<stdout>#{stdout}</stdout>\n" +
-      "<stderr>#{stderr}</stderr>\n" +
+      result.pretty_inspect +
       "-----------------------\n")
 
     if block_given?
-      yield(*result)
+      yield(result)
     else
       result
     end

@@ -40,14 +40,19 @@ module RSpecSystem
       dest = opts[:n].name
       cmd = opts[:c]
 
-      result = ""
+      r = nil
       Dir.chdir(@vagrant_path) do
         cmd = "vagrant ssh #{dest} --command \"cd /tmp && sudo #{cmd}\""
         log.debug("[vagrant#run] Running command: #{cmd}")
-        result = systemu cmd
-        log.debug("[Vagrant#run] Finished running command: #{cmd}. Result is #{result}.")
+        r = systemu cmd
+        log.debug("[Vagrant#run] Finished running command: #{cmd}.")
       end
-      result
+
+      {
+        :exit_code => r[0].exitstatus,
+        :stdout => r[1],
+        :stderr => r[2]
+      }
     end
 
     # Transfer files to a host in the NodeSet.

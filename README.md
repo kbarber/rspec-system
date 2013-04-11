@@ -42,8 +42,8 @@ Create the directory `spec/system` in your project, make sure your unit tests go
 
     describe 'basics' do
       it 'should cat /etc/resolv.conf' do
-        system_run('cat /etc/resolv.conf') do |s,o,e|
-          o.should =~ /localhost/
+        system_run('cat /etc/resolv.conf') do |r|
+          r[:stdout].should =~ /localhost/
         end
       end
     end
