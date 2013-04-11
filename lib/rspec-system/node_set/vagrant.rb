@@ -58,6 +58,11 @@ module RSpecSystem
     # Transfer files to a host in the NodeSet.
     #
     # @param opts [Hash] options
+    # @todo This is damn ugly, because we ssh in as vagrant, we copy to a temp
+    #   path then move it later. Its slow and brittle and we need a better
+    #   solution. Its also very Linux-centrix in its use of temp dirs.
+    # @todo Need to return more interesting information, not just the systemu
+    #   results. This will require a formalisation of this API.
     def rcp(opts)
       #log.debug("[Vagrant@rcp] called with #{opts.inspect}")
 
@@ -65,18 +70,29 @@ module RSpecSystem
       source = opts[:sp]
       dest_path = opts[:dp]
 
-      # TODO: This is damn ugly, because we ssh in as vagrant, we copy to a
-      # temp path then move later. This pattern at the moment only really works
-      # on dirs.
       log.info("[Vagrant#rcp] Transferring files from #{source} to #{dest}:#{dest_path}")
 
-      # TODO: The static temp path here is definately insecure
-      cmd = "scp -r -F '#{ssh_config}' '#{source}' #{dest}:/tmp/tmpxfer"
-      log.debug("[Vagrant#rcp] Running command: #{cmd}")
-      systemu cmd
+      # Grab a remote path for temp transfer
+      tmpdest = tmppath
 
-      # Now we move the file into place
-      run(:n => opts[:d], :c => "mv /tmp/tmpxfer #{dest_path}")
+      # Do the copy and print out results for debugging
+      cmd = "scp -r -F '#{ssh_config}' '#{source}' #{dest}:#{tmpdest}"
+      log.debug("[Vagrant#rcp] Running command: #{cmd}")
+      r = systemu cmd
+
+      result = {
+        :exit_code => r[0].exitstatus,
+        :stdout => r[1],
+        :stderr => r[2]
+      }
+
+      log.info("system_run results:\n" +
+        "-----------------------\n" +
+        result.pretty_inspect +
+        "-----------------------\n")
+
+      # Now we move the file into their final destination
+      run(:n => opts[:d], :c => "mv #{tmpdest} #{dest_path}")
     end
 
     # Create the Vagrantfile for the NodeSet.
@@ -144,6 +160,25 @@ module RSpecSystem
         system("vagrant #{args}")
       end
       nil
+    end
+
+    # Return a random string of chars, used for temp dir creation
+    #
+    # @api private
+    # @return [String] string of 50 random characters A-Z and a-z
+    def random_string
+      o =  [('a'..'z'),('A'..'Z')].map{|i| i.to_a}.flatten
+      (0...50).map{ o[rand(o.length)] }.join
+    end
+
+    # Generates a random string for use in remote transfers.
+    #
+    # @api private
+    # @return [String] a random path
+    # @todo Very Linux dependant, probably need to consider OS X and Windows at
+    #   least.
+    def tmppath
+      '/tmp/' + random_string
     end
   end
 end

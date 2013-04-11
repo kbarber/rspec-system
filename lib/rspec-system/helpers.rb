@@ -168,15 +168,13 @@ module RSpecSystem::Helpers
     dp = options[:dp]
 
     log.info("system_rcp from #{sp} to #{d.name}:#{dp} executed")
-    status, stdout, stderr = results = rspec_system_node_set.rcp(options)
+    results = rspec_system_node_set.rcp(options)
     log.info("rcp results:\n" +
       "-----------------------\n" +
-      "Exit Status: #{status.exitstatus}\n" +
-      "<stdout>#{stdout}</stdout>\n" +
-      "<stderr>#{stderr}</stderr>\n" +
+      results.pretty_inspect +
       "-----------------------\n")
 
-    if status.exitstatus == 1
+    if results[:exit_code] == 1
       return true
     else
       return false
