@@ -61,7 +61,7 @@ RSpec.configure do |c|
   end
 
   # Default the system_tmp dir to something random
-  c.system_tmp = Dir.tmpdir
+  c.system_tmp = Dir.mktmpdir
 
   c.before :suite do
     start_nodes
