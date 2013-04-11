@@ -42,7 +42,7 @@ module RSpecSystem
 
       result = ""
       Dir.chdir(@vagrant_path) do
-        cmd = "vagrant ssh #{dest} --command \"cd /tmp && sudo -i #{cmd}\""
+        cmd = "vagrant ssh #{dest} --command \"cd /tmp && sudo #{cmd}\""
         log.debug("[vagrant#run] Running command: #{cmd}")
         result = systemu cmd
         log.debug("[Vagrant#run] Finished running command: #{cmd}. Result is #{result}.")

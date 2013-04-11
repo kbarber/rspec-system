@@ -49,3 +49,7 @@ sets:
     nodes:
       "main":
         prefab: 'ubuntu-server-12042-x64'
+  'sles-11sp1-x64':
+    nodes:
+      "main":
+        prefab: 'sles-11sp1-x64'
