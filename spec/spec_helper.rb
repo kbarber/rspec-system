@@ -13,12 +13,18 @@ Pathname.glob("#{dir}/shared_behaviours/**/*.rb") do |behaviour|
   require behaviour.relative_path_from(Pathname.new(dir))
 end
 
+def root_path
+  Pathname.new(File.expand_path(File.join(__FILE__, '..', '..')))
+end
+
 def fixture_path
-  Pathname.new(File.expand_path(File.join(__FILE__, '..', 'fixtures')))
+  root_path + 'spec' + 'fixtures'
 end
+
 def resources_path
-  Pathname.new(File.expand_path(File.join(__FILE__, '..', '..', 'resources')))
+  root_path + 'resources'
 end
+
 def schema_path
   resources_path + 'kwalify-schemas'
 end

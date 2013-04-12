@@ -25,4 +25,15 @@ describe 'nodeset_schema' do
       errors.should == []
     end
   end
+
+  it "my own .nodeset.yml should validate" do
+    ydoc = parser.parse_file(root_path + '.nodeset.yml')
+    errors = parser.errors
+    if errors && !errors.empty?
+      errors.each do |e|
+        puts "line=#{e.linenum}, path=#{e.path}, mesg=#{e.message}"
+      end
+    end
+    errors.should == []
+  end
 end
