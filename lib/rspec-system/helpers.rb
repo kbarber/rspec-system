@@ -70,12 +70,13 @@ module RSpecSystem::Helpers
 
   # Runs a shell command on a test host.
   #
-  # When invoked as a block the status,stdout and stderr are yielded to the
-  # block as parameters. If not these three variables are returned to the
-  # caller.
+  # When invoked as a block a result hash is yielded to the block as a
+  # parameter. Alternatively the result hash it is returned to the caller.
   #
   # If you have only provided 1 node in your nodeset, or you have specified a
-  # a default you can avoid entering the name of the node if you wish.
+  # a default you can avoid entering the name of the node if you wish. The
+  # method for simplicity can accept a string instead of an options hash
+  # and it knows to default everything else.
   #
   # The underlying implementation is actually performed by the particular
   # node provider, however this abstraction should mean you shouldn't need
@@ -119,7 +120,9 @@ module RSpecSystem::Helpers
     result = ns.run(options)
     log.info("system_run results:\n" +
       "-----------------------\n" +
-      result.pretty_inspect +
+      "exit_code: #{result[:exit_code]}\n" +
+      "stdout:\n #{result[:stdout]}\n" +
+      "stderr:\n #{result[:stderr]}\n" +
       "-----------------------\n")
 
     if block_given?
@@ -152,13 +155,14 @@ module RSpecSystem::Helpers
   # @option options [RSpecSystem::Node] :s alias for source_node
   # @return [Bool] returns true if successful
   def system_rcp(options)
+    ns = rspec_system_node_set
     options = {
       :source_path => options[:sp],
       :destination_path => options[:dp],
       :dp => options[:destination_path],
       :sp => options[:source_path],
-      :destination_node => rspec_system_node_set.default_node,
-      :d => rspec_system_node_set.default_node,
+      :destination_node => ns.default_node,
+      :d => ns.default_node,
       :source_node => nil,
       :s => nil,
     }.merge(options)
@@ -168,17 +172,7 @@ module RSpecSystem::Helpers
     dp = options[:dp]
 
     log.info("system_rcp from #{sp} to #{d.name}:#{dp} executed")
-    results = rspec_system_node_set.rcp(options)
-    log.info("rcp results:\n" +
-      "-----------------------\n" +
-      results.pretty_inspect +
-      "-----------------------\n")
-
-    if results[:exit_code] == 1
-      return true
-    else
-      return false
-    end
+    ns.rcp(options)
   end
 
   # @!group Queries

@@ -8,32 +8,43 @@ module RSpecSystem
 
     ENV_TYPE = 'vagrant'
 
+    # Creates a new instance of RSpecSystem::NodeSet::Vagrant
+    #
+    # @param setname [String] name of the set to instantiate
+    # @param config [Hash] nodeset configuration hash
     def initialize(setname, config)
       super
       @vagrant_path = File.expand_path(File.join(RSpec.configuration.system_tmp, 'vagrant_projects', setname))
     end
 
     # Setup the NodeSet by starting all nodes.
+    #
+    # @return [void]
     def setup
       log.info "[Vagrant#setup] Begin setting up vagrant"
-      create_vagrantfile
 
-      log.info "[Vagrant#setup] Running 'vagrant destroy'"
-      vagrant("destroy --force")
+      create_vagrantfile()
+
+      teardown()
 
       log.info "[Vagrant#setup] Running 'vagrant up'"
       vagrant("up")
+      nil
     end
 
     # Shutdown the NodeSet by shutting down or pausing all nodes.
+    #
+    # @return [void]
     def teardown
       log.info "[Vagrant#teardown] Running 'vagrant destroy'"
       vagrant("destroy --force")
+      nil
     end
 
     # Run a command on a host in the NodeSet.
     #
     # @param opts [Hash] options
+    # @return [Hash] a hash containing :exit_code, :stdout and :stderr
     def run(opts)
       #log.debug("[Vagrant#run] called with #{opts.inspect}")
 
@@ -58,11 +69,10 @@ module RSpecSystem
     # Transfer files to a host in the NodeSet.
     #
     # @param opts [Hash] options
+    # @return [Boolean] returns true if command succeeded, false otherwise
     # @todo This is damn ugly, because we ssh in as vagrant, we copy to a temp
     #   path then move it later. Its slow and brittle and we need a better
     #   solution. Its also very Linux-centrix in its use of temp dirs.
-    # @todo Need to return more interesting information, not just the systemu
-    #   results. This will require a formalisation of this API.
     def rcp(opts)
       #log.debug("[Vagrant@rcp] called with #{opts.inspect}")
 
@@ -86,13 +96,26 @@ module RSpecSystem
         :stderr => r[2]
       }
 
-      log.info("system_run results:\n" +
+      log.info("scp results:\n" +
         "-----------------------\n" +
-        result.pretty_inspect +
+        "exit_code: #{result[:exit_code]}\n" +
+        "stdout:\n #{result[:stdout]}\n" +
+        "stderr:\n #{result[:stderr]}\n" +
         "-----------------------\n")
 
       # Now we move the file into their final destination
-      run(:n => opts[:d], :c => "mv #{tmpdest} #{dest_path}")
+      result = run(:n => opts[:d], :c => "mv #{tmpdest} #{dest_path}")
+      log.info("move results:\n" +
+        "-----------------------\n" +
+        "exit_code: #{result[:exit_code]}\n" +
+        "stdout:\n #{result[:stdout]}\n" +
+        "stderr:\n #{result[:stderr]}\n" +
+        "-----------------------\n")
+      if result[:exit_code] == 0
+        return true
+      else
+        return false
+      end
     end
 
     # Create the Vagrantfile for the NodeSet.
@@ -105,16 +128,21 @@ module RSpecSystem
         f.write('Vagrant::Config.run do |c|')
         nodes.each do |k,v|
           log.debug "Filling in content for #{k}"
+
+          ps = v.provider_specifics['vagrant']
+
           f.write(<<-EOS)
-  c.vm.define '#{k}' do |vmconf|
-    vmconf.vm.host_name = "#{k}"
-#{template_node(v.provider_specifics['vagrant'])}
+  c.vm.define '#{k}' do |v|
+    v.vm.host_name = '#{k}'
+    v.vm.box = '#{ps['box']}'
+    v.vm.box_url = '#{ps['box_url']}'
   end
           EOS
         end
         f.write('end')
       end
       log.debug "[Vagrant#create_vagrantfile] Finished creating vagrant file"
+      nil
     end
 
     # Here we get vagrant to drop the ssh_config its using so we can monopolize
@@ -122,6 +150,7 @@ module RSpecSystem
     # since its indexed based on our own node names its quite ideal.
     #
     # @api private
+    # @return [String] path to ssh_config file
     def ssh_config
       ssh_config_path = File.expand_path(File.join(@vagrant_path, "ssh_config"))
       begin
@@ -135,17 +164,6 @@ module RSpecSystem
         end
       end
       ssh_config_path
-    end
-
-    # Provide Vagrantfile templates from node definition.
-    #
-    # @api private
-    # @param settings [Hash] provider specific settings for vagrant
-    def template_node(settings)
-      template = <<-EOS
-    vmconf.vm.box = '#{settings['box']}'
-    vmconf.vm.box_url = '#{settings['box_url']}'
-      EOS
     end
 
     # Execute vagrant command in vagrant_path
