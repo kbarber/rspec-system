@@ -115,6 +115,22 @@ In Jenkins you should be able to use RSPEC\_SET in a test matrix, thus obtaining
 
 ### Plugins to rspec-system
 
+Right now we have two types of plugins, the framework is in a state of flux as to how one writes these things but here we go.
+
+#### Helper libraries
+
+Libraries that provide test helpers, and setup helpers for testing development on the software in question.
+
+* rspec-system-puppet <http://rubygems.org/gems/rspec-system-puppet>
+
+#### Node providers
+
+A node provider should provide the ability to launch nodes (or if they are already launched provide information to get to them), run commands on nodes, transfer files and shutdown nodes.
+
+That is, abstractions around other virtualisation, cloud or system tools. Right now we only have one of these for Vagrant using VirtualBox specifically and its in core.
+
+#### The Future of Plugins
+
 I want to start an eco-system of plugins for rspec-system, but do it in a sane way. Right now I see the following potential plugin types, if you think you can help please do:
 
 * node providers - that is, abstractions around other virtualisation, cloud or system tools. Right now a NodeSet is tied to a virtual type, but I think this isn't granual enough. Some ideas for future providers are:
@@ -124,10 +140,9 @@ I want to start an eco-system of plugins for rspec-system, but do it in a sane w
     * manual - not everything has to be 'launched' I can see a need for defining a static configuration for older machines that can't be poked and peeked. Of course, we might need to add cleanup tasks for this case.
 * helper libraries - libraries that provide test helpers, and setup helpers for testing development on the software in question.
     * distro - helpers that wrap common linux distro tasks, like package installation.
-    * puppet - helpers around installing different versions of puppet, PE as well - firing up masters. Perfect for testing modules I think. Puppet could be used a provisioner for setting up tests, as using shell commands for this purpose is a bit rough, not very idepotent and is re-inventing the wheel.
     * mcollective - for launching the basics, activemq, broker clusters. Useful for testing mcollective agents.
     * puppetdb - helpers for setting up puppetdb, probably using the modules we already have.
     * other config management tools - for the purposes of testing modules against them, or using them for test setup provisioners like I've mentioned before with Puppet.
     * others I'm sure ...
 
-These could be shipped as external gems, and plugged in to the rspec-system framework somehow.
+These could be shipped as external gems, and plugged in to the rspec-system framework somehow. Ideas on how to do this properly are very welcome, if you bring code as well :-).
