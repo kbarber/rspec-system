@@ -9,6 +9,7 @@ describe "system_run:" do
   end
 
   it 'piping should be preserved' do
+    system_run('rm -f /tmp/foo')
     system_run('echo "foo" > /tmp/foo') do |r|
       r[:stderr].should == ''
       r[:exit_code].should == 0
@@ -18,5 +19,20 @@ describe "system_run:" do
       r[:stdout].should =~ /foo/
       r[:exit_code].should == 0
     end
+    system_run('rm -f /tmp/foo')
+  end
+
+  it 'escape single quotes properly' do
+    system_run('rm -f /tmp/foo')
+    system_run("echo 'foo' > /tmp/foo") do |r|
+      r[:stderr].should == ''
+      r[:exit_code].should == 0
+    end
+
+    system_run('cat /tmp/foo') do |r|
+      r[:stdout].should =~ /foo/
+      r[:exit_code].should == 0
+    end
+    system_run('rm -f /tmp/foo')
   end
 end
