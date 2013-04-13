@@ -146,3 +146,38 @@ I want to start an eco-system of plugins for rspec-system, but do it in a sane w
     * others I'm sure ...
 
 These could be shipped as external gems, and plugged in to the rspec-system framework somehow. Ideas on how to do this properly are very welcome, if you bring code as well :-).
+
+### CI Integration
+
+So currently I've only integrated this with Jenkins. If you have luck doing it on other CI platforms, feel free to add to this documentation.
+
+#### Jenkins
+
+My setup was:
+
+* Single box - 32GB of RAM and 8 cpus
+* Debian 7
+* Jenkins 1.510 (installed via packages from the jenkins repos)
+* Vagrant 1.1.5 (installed via packages from the vagrant site)
+* VirtualBox 4.2.10 (installed via packages from virtualbox)
+* RVM with Ruby 2.0.0
+
+The setup for a job is basically:
+
+* Setup your slave box to only have 1 executor (there is some bug here, something to do with vagrant not liking multiple projects)
+* Create new matrix build
+* Specify VCS settings etc. as per normal
+* Create a user defined axis called 'RSPEC_SET' and add your nodesets in there: fedora-18-x64, centos-64-x64 etc.
+* Use touchstone with a filter of RSPEC_SET=='centos-64-x64' so you don't chew up cycles running a whole batch of broken builds
+* Create an execute shell job like so:
+
+    #!/bin/bash
+    set +e
+
+    [[ -s "$HOME/.rvm/scripts/rvm" ]] && source "$HOME/.rvm/scripts/rvm"
+    rvm use ruby-2.0.0@some_unique_name_here --create
+
+    bundle update
+    rake spec:system
+
+I went quite complex and had Github pull request integration working with this, and quite a few other nice features. If you need help setting it up get in touch.
