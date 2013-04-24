@@ -32,7 +32,7 @@ module RSpecSystem
       teardown()
 
       log.info "[Vagrant#setup] Running 'vagrant up'"
-      vagrant("up")
+      vagrant("up --provider vmware_fusion")
 
       # Establish ssh connectivity
       ssh_channels = {}
