@@ -1,3 +1,14 @@
+1.7.1
+=====
+
+This fixes the nokogiri 1.6.0 issue, whereby that version no longer supports Ruby 1.8.7 any more. Instead we have pinned nokogiri to 1.5.x.
+
+#### Detailed Changes
+
+* Fix nokogiri for 1.8.7 (Ken Barber)
+
+-------------------------------
+
 1.7.0
 =====
 
