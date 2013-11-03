@@ -76,16 +76,19 @@ module RSpecSystem
         rs_storage[:ipaddress] ||= shell(:n => k, :c => "ip a|awk '/g/{print$2}' | cut -d/ -f1 | head -1").stdout.chomp
 
         # Configure local hostname and hosts file
-        hosts = <<-EOS
-#{rs_storage[:ipaddress]} #{k}
-127.0.0.1 #{k} localhost
-        EOS
-        shell(:n => k, :c => "echo '#{hosts}' > /etc/hosts")
         shell(:n => k, :c => "hostname #{k}")
 
         if v.facts['osfamily'] == 'Debian' then
           shell(:n => k, :c => "echo '#{k}' > /etc/hostname")
         end
+
+        hosts = <<-EOS
+#{rs_storage[:ipaddress]} #{k}
+127.0.0.1 #{k} localhost
+        EOS
+        shell(:n => k, :c => "echo '#{hosts}' > /etc/hosts")
+
+        shell(:n => k, :c => 'cat /etc/hosts')
 
         # Setup ntp
         if v.facts['osfamily'] == 'Debian' then
