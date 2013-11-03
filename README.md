@@ -203,7 +203,7 @@ To define custom prefabs place a `.prefabs.yml` file in your project's root dire
         kernel: Linux
         rubyversion: "1.8.7"
       provider_specifics:
-        vagrant:
+        vagrant_virtualbox:
           box: 'scientific-64-x64-vb4210-nocm'
           box_url: 'http://example.com/path/to/scientific-64-x64-vb4210-nocm.box'
 
@@ -216,7 +216,7 @@ For example, to use a different box for CentOS 6.4 x64, you can override the `bo
     ---
     'centos-64-x64':
       provider_specifics:
-        vagrant:
+        vagrant_virtualbox:
           box: 'centos-64-x64-vbox4210'
           box_url: 'http://puppet-vagrant-boxes.puppetlabs.com/centos-64-x64-vbox4210.box'
 
@@ -245,7 +245,9 @@ So if you wanted to run an alternate nodeset you could use:
 
 In Jenkins you should be able to use RS\_SET in a test matrix, thus obtaining quite a nice integration and visual display of nodesets in Jenkins.
 
-#### Vagrant Virtualbox Provider
+#### Vagrant Virtualbox
+
+    RS_PROVIDER='vagrant_virtualbox'
 
 This is the default provider, as all the products for this provider are free, most people should be able to run it.
 
@@ -260,7 +262,24 @@ Once these are ready, you can Run the system tests with:
 
 The VM's should be downloaded from the internet, started and tests should run.
 
-#### VSphere Provider
+#### Vagrant VMware Fusion
+
+    RS_PROVIDER='vagrant_vmware_fusion'
+
+Make sure you have already installed:
+
+* VirtualBox 4.2.10+
+* VMware Fusion 5.0.3+
+
+Once these are ready, you can Run the system tests with:
+
+    RS_PROVIDER='vagrant_vmware_fusion' bundle exec rake spec:system
+
+The VM's should be downloaded from the internet, started and tests should run.
+
+#### VSphere
+
+    RS_PROVIDER='vsphere'
 
 This provider will launch nodes using VMWare VSphere API's and use those for running tests. This provider is really aimed at the users who want to use this library within their own CI system for example, as apposed to developers who wish to run tests locally themselves.
 
@@ -302,15 +321,20 @@ Libraries that provide test helpers, and setup helpers for testing development o
 
 A node provider should provide the ability to launch nodes (or if they are already launched provide information to get to them), run commands on nodes, transfer files and shutdown nodes. That is, abstractions around other virtualisation, cloud or system tools.
 
-Right now the two options are: vagrant & vsphere and these are installed with core. In the future we probably want to split these out to plugins, but the plugin system isn't quite ready for that yet.
+Right now the options are:
+
+* vagrant\_virtualbox
+* vagrant\_vmware\_fusion
+* vsphere
+
+... and these are installed with core. In the future we probably want to split these out to plugins, but the plugin system isn't quite ready for that yet.
 
 #### The Future of Plugins
 
 I want to start an eco-system of plugins for rspec-system, but do it in a sane way. Right now I see the following potential plugin types, if you think you can help please do:
 
 * node providers - that is, abstractions around other virtualisation, cloud or system tools. Right now a NodeSet is tied to a virtual type, but I think this isn't granual enough. Some ideas for future providers are:
-    * blimpy - for firing up EC2 and OpenStack nodes, useful for Jenkins integration
-    * vmware fusion - for using vmware fusion with vagrant
+    * other vagrant plugins - it should be reasonably easy to extend support out to new vagrant plugins, since most of the example plugins are already using a simple pattern to do this.
     * razor - for launching bare metail nodes for testing purposes. Could be really useful to have baremetal tests for software that needs it like `facter`.
     * manual - not everything has to be 'launched' I can see a need for defining a static configuration for older machines that can't be poked and peeked. Of course, we might need to add cleanup tasks for this case.
 * helper libraries - libraries that provide test helpers, and setup helpers for testing development on the software in question.
@@ -326,9 +350,9 @@ These could be shipped as external gems, and plugged in to the rspec-system fram
 
 So currently I've only integrated this with Jenkins. If you have luck doing it on other CI platforms, feel free to add to this documentation.
 
-#### Jenkins and the Vagrant provider
+#### Jenkins
 
-My setup was:
+For virtualbox the setup tested with was:
 
 * Single box - 32GB of RAM and 8 cpus
 * Debian 7
@@ -337,28 +361,7 @@ My setup was:
 * VirtualBox 4.2.10 (installed via packages from virtualbox)
 * RVM with Ruby 2.0.0
 
-The setup for a job is basically:
-
-* Setup your slave box to only have 1 executor (there is some bug here, something to do with vagrant not liking multiple projects)
-* Create new matrix build
-* Specify VCS settings etc. as per normal
-* Create a user defined axis called 'RS\_SET' and add your nodesets in there: fedora-18-x64, centos-64-x64 etc.
-* Use touchstone with a filter of RS\_SET=='centos-64-x64' so you don't chew up cycles running a whole batch of broken builds
-* Create an execute shell job like so:
-
-        #!/bin/bash
-        set +e
-    
-        [[ -s "$HOME/.rvm/scripts/rvm" ]] && source "$HOME/.rvm/scripts/rvm"
-        rvm use ruby-2.0.0
-        bundle install --path vendor/bundle
-        bundle exec rake spec:system
-
-I went quite complex and had Github pull request integration working with this, and quite a few other nice features. If you need help setting it up get in touch.
-
-#### Jenkins and the VSphere provider
-
-My setup was:
+Or for VSphere:
 
 * Debian 7
 * Jenkins 1.510
@@ -369,8 +372,8 @@ The setup for a job is basically:
 * Create new matrix build
 * Specify VCS settings etc. as per normal
 * Create a user defined axis called 'RS\_SET' and add your nodesets in there: fedora-18-x64, centos-64-x64 etc.
-* Use the enviornment injection facility to add all the other RSPEC\_VSPHERE vars as above
 * Use touchstone with a filter of RS\_SET=='centos-64-x64' so you don't chew up cycles running a whole batch of broken builds
+* For the provider in question, make sure you have provided any custom configuration. For example VSphere requires a bunch of RS\_VSPHERE\_\* variables to be set. Make sure these are set using the environment variable injection facility.
 * Create an execute shell job like so:
 
         #!/bin/bash
@@ -381,4 +384,4 @@ The setup for a job is basically:
         bundle install --path vendor/bundle
         bundle exec rake spec:system
 
-Basically the results were quite nice, as apposed to the 'vagrant' provider I was able to achieve running parallel jobs using my matrix setup.
+I went quite complex and had Github pull request integration working with this, and quite a few other nice features. If you need help setting it up get in touch.
