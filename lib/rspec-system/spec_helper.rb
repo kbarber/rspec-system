@@ -19,11 +19,13 @@ RSpec.configure do |c|
                 File.expand_path(File.join(File.basename(__FILE__), '..', '.rspec_system')))
   c.add_setting :rs_provider,
     :default => ENV['RS_PROVIDER'] ||
+                ENV['RSPEC_VIRTUAL_ENV'] ||
                 'vagrant_virtualbox'
   c.add_setting :rs_set,
-    :default => ENV['RS_SET']
+    :default => ENV['RS_SET'] ||
+                ENV['RSPEC_SET']
   c.add_setting :rs_destroy,
-    :default => ENV['RS_DESTROY'] =~ /(no|false)/ ? false : true
+    :default => (ENV['RS_DESTROY'] || ENV['RSPEC_DESTROY']) =~ /(no|false)/ ? false : true
   c.add_setting :rs_custom_prefabs,
     :default => Pathname.new(ENV['RS_CUSTOM_PREFABS'] ||
                 File.expand_path(File.join(File.basename(__FILE__), '..', '.prefabs.yml')))

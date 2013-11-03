@@ -41,8 +41,8 @@ module RSpecSystem
       # Traverse the ENV variables and load them into our config automatically
       @vmconf = defaults
       ENV.each do |k,v|
-        next unless k =~/^RS_VSPHERE_/
-        var = k.sub(/^RS_VSPHERE_/, '').downcase.to_sym
+        next unless k =~/^RS(PEC)?_VSPHERE_/
+        var = k.sub(/^RS(PEC)?_VSPHERE_/, '').downcase.to_sym
         unless options.include?(var)
           log.info("Ignoring unknown environment variable #{k}")
           next
