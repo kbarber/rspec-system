@@ -240,7 +240,7 @@ module RSpecSystem
         ipaddress = rs_storage[:ipaddress]
         raise RuntimeError, "No ipaddress provided from launch phase for node #{k}" if ipaddress.nil?
 
-        chan = ssh_setup(:host => k, :user => 'root', :net_ssh_options => {
+        chan = ssh_connect(:host => k, :user => 'root', :net_ssh_options => {
           :keys => vmconf[:ssh_keys].split(":"),
           :host_name => ipaddress,
         })
