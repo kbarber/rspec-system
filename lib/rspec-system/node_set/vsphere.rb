@@ -234,9 +234,11 @@ module RSpecSystem
     # @return [void]
     def connect
       nodes.each do |k,v|
-        RSpec.configuration.rs_storage[:nodes][k] ||= {}
+        rs_storage = RSpec.configuration.rs_storage[:nodes][k]
+        raise RuntimeError, "No internal storage for node #{k}" if rs_storage.nil?
 
-        ipaddress = RSpec.configuration.rs_storage[:nodes][k][:ipaddress]
+        ipaddress = rs_storage[:ipaddress]
+        raise RuntimeError, "No ipaddress provided from launch phase for node #{k}" if ipaddress.nil?
 
         chan = ssh_setup(:host => k, :user => 'root', :net_ssh_options => {
           :keys => vmconf[:ssh_keys].split(":"),
