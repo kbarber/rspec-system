@@ -85,10 +85,14 @@ module RSpecSystem
         hosts = <<-EOS
 #{rs_storage[:ipaddress]} #{k}
 127.0.0.1 #{k} localhost
+::1 #{k} localhost
         EOS
         shell(:n => k, :c => "echo '#{hosts}' > /etc/hosts")
 
+        # Display setup for diagnostics
         shell(:n => k, :c => 'cat /etc/hosts')
+        shell(:n => k, :c => 'hostname')
+        shell(:n => k, :c => 'hostname -f')
 
         # Setup ntp
         if v.facts['osfamily'] == 'Debian' then
