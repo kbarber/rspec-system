@@ -108,7 +108,7 @@ module RSpecSystem
       File.open(File.expand_path(File.join(@vagrant_path, "Vagrantfile")), 'w') do |f|
         f.write('Vagrant.configure("2") do |c|' + "\n")
         nodes.each do |k,v|
-          ps = v.provider_specifics['vagrant']
+          ps = v.provider_specifics[provider_type]
           default_options = { 'mac' => randmac }
           options = default_options.merge(v.options || {})
 
@@ -188,6 +188,14 @@ module RSpecSystem
         system("vagrant #{args}")
       end
       nil
+    end
+
+    # Returns a list of options that apply to all types of vagrant providers
+    #
+    # @return [Array<String>] Array of options
+    # @api private
+    def global_vagrant_options
+      ['ip']
     end
 
   end

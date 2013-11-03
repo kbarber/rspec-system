@@ -10,7 +10,7 @@ module RSpecSystem
   class NodeSet::Vsphere < RSpecSystem::NodeSet::Base
     include RSpecSystem::Log
 
-    ENV_TYPE = 'vsphere'
+    PROVIDER_TYPE = 'vsphere'
 
     attr_reader :vmconf
 

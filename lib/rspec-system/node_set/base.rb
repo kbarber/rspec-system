@@ -65,13 +65,19 @@ module RSpecSystem
     # @abstract Override this method and provide your own configure code
     def configure
       nodes.each do |k,v|
+        rs_storage = RSpec.configuration.rs_storage[:nodes][k]
+
         # Fixup profile to avoid noise
         if v.facts['osfamily'] == 'Debian'
           shell(:n => k, :c => "sed -i 's/^mesg n/# mesg n/' /root/.profile")
         end
 
+        # Grab IP address for host, if we don't already have one
+        rs_storage[:ipaddress] ||= shell(:n => k, :c => "ip a|awk '/g/{print$2}' | cut -d/ -f1 | head -1").stdout.chomp
+
         # Configure local hostname and hosts file
         hosts = <<-EOS
+#{rs_storage[:ipaddress]} #{k}
 127.0.0.1 #{k} localhost
         EOS
         shell(:n => k, :c => "echo '#{hosts}' > /etc/hosts")
@@ -146,8 +152,8 @@ module RSpecSystem
     # @!group Common Methods
 
     # Return environment type
-    def env_type
-      self.class::ENV_TYPE
+    def provider_type
+      self.class::PROVIDER_TYPE
     end
 
     # Return default node

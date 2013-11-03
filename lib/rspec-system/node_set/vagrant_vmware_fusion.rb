@@ -5,15 +5,15 @@ require 'net/scp'
 require 'rspec-system/node_set/vagrant_base'
 
 module RSpecSystem
-  # A NodeSet implementation for Vagrant.
-  class NodeSet::VagrantVirtualbox < NodeSet::VagrantBase
-    PROVIDER_TYPE = 'vagrant_virtualbox'
+  # A NodeSet implementation for Vagrant using the vmware_fusion provider
+  class NodeSet::VagrantVmwareFusion < NodeSet::VagrantBase
+    PROVIDER_TYPE = 'vagrant_vmware_fusion'
 
     # Name of provider
     #
     # @return [String] name of the provider as used by `vagrant --provider`
     def vagrant_provider_name
-      'virtualbox'
+      'vmware_fusion'
     end
 
     # Adds virtualbox customization to the Vagrantfile
@@ -27,10 +27,12 @@ module RSpecSystem
       options.each_pair do |key,value|
         next if global_vagrant_options.include?(key)
         case key
-        when 'cpus','memory'
-          custom_config << "    prov.customize ['modifyvm', :id, '--#{key}','#{value}']\n"
+        when 'cpus'
+          custom_config << "    prov.vmx['numvcpus'] = '#{value}'\n"
+        when 'memory'
+          custom_config << "    prov.vmx['memsize'] = '#{value}'\n"
         when 'mac'
-          custom_config << "    prov.customize ['modifyvm', :id, '--macaddress1','#{value}']\n"
+          custom_config << "    prov.vmx['ethernet0.generatedAddress'] = '#{value}'\n"
         else
           log.warn("Skipped invalid custom option for node #{name}: #{key}=#{value}")
         end
