@@ -72,6 +72,18 @@ module RSpecSystem
           shell(:n => k, :c => "sed -i 's/^mesg n/# mesg n/' /root/.profile")
         end
 
+        # Setup ntp
+        if v.facts['osfamily'] == 'Debian' then
+          shell(:n => k, :c => 'apt-get install -y ntpdate')
+        elsif v.facts['osfamily'] == 'RedHat' then
+          if v.facts['lsbmajdistrelease'] == '5' then
+            shell(:n => k, :c => 'yum install -y ntp')
+          else
+            shell(:n => k, :c => 'yum install -y ntpdate')
+          end
+        end
+        shell(:n => k, :c => 'ntpdate -u pool.ntp.org')
+
         # Grab IP address for host, if we don't already have one
         rs_storage[:ipaddress] ||= shell(:n => k, :c => "ip a|awk '/g/{print$2}' | cut -d/ -f1 | head -1").stdout.chomp
 
@@ -93,18 +105,6 @@ module RSpecSystem
         shell(:n => k, :c => 'cat /etc/hosts')
         shell(:n => k, :c => 'hostname')
         shell(:n => k, :c => 'hostname -f')
-
-        # Setup ntp
-        if v.facts['osfamily'] == 'Debian' then
-          shell(:n => k, :c => 'apt-get install -y ntpdate')
-        elsif v.facts['osfamily'] == 'RedHat' then
-          if v.facts['lsbmajdistrelease'] == '5' then
-            shell(:n => k, :c => 'yum install -y ntp')
-          else
-            shell(:n => k, :c => 'yum install -y ntpdate')
-          end
-        end
-        shell(:n => k, :c => 'ntpdate -u pool.ntp.org')
       end
       nil
     end
